@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "cypress:open": "cd integration && cypress open"
+    "cypress:open": "cd integration && cypress open",
+    "cypress:run": "cd integration && cypress run",
+    "test": "elm-test"
   },
   "author": "",
   "license": "ISC",
