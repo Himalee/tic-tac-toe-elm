@@ -6,6 +6,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Player exposing (..)
 
 
 boardSize =
@@ -27,14 +28,14 @@ main =
 
 type alias Model =
     { board : List String
-    , currentMark : String
+    , currentPlayer : Player
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = create boardSize
-      , currentMark = "X"
+      , currentPlayer = X
       }
     , Cmd.none
     )
@@ -53,7 +54,8 @@ update msg model =
     case msg of
         MarkBoard index ->
             ( { model
-                | board = markBoard index model.board model.currentMark
+                | board = markBoard index model.board <| getMark model.currentPlayer
+                , currentPlayer = switchPlayers model.currentPlayer
               }
             , Cmd.none
             )
@@ -68,6 +70,17 @@ subscriptions model =
 -- VIEW HELPER
 
 
+switchPlayers :
+    Player
+    -> Player
+switchPlayers player =
+    if player == X then
+        O
+
+    else
+        X
+
+
 createBoardWithButtons : List String -> List (Html Msg)
 createBoardWithButtons board =
     board
@@ -77,7 +90,7 @@ createBoardWithButtons board =
 
 createCell : ( Int, String ) -> Html Msg
 createCell ( index, value ) =
-    button [ onClick <| MarkBoard index, disabled False ] [ text <| value ]
+    button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value ] [ text <| value ]
 
 
 

@@ -4454,6 +4454,7 @@ var author$project$Board$create = function (size) {
 	return A2(elm$core$List$repeat, size, '');
 };
 var author$project$Main$boardSize = 9;
+var author$project$Player$X = {$: 'X'};
 var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$True = {$: 'True'};
 var elm$core$Result$isOk = function (result) {
@@ -4853,7 +4854,7 @@ var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
 		{
 			board: author$project$Board$create(author$project$Main$boardSize),
-			currentMark: 'X'
+			currentPlayer: author$project$Player$X
 		},
 		elm$core$Platform$Cmd$none);
 };
@@ -4958,6 +4959,17 @@ var author$project$Board$markBoard = F3(
 				playerMark,
 				elm$core$Array$fromList(grid)));
 	});
+var author$project$Player$O = {$: 'O'};
+var author$project$Main$switchPlayers = function (player) {
+	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
+};
+var author$project$Player$getMark = function (player) {
+	if (player.$ === 'X') {
+		return 'X';
+	} else {
+		return 'O';
+	}
+};
 var author$project$Main$update = F2(
 	function (msg, model) {
 		var index = msg.a;
@@ -4965,10 +4977,19 @@ var author$project$Main$update = F2(
 			_Utils_update(
 				model,
 				{
-					board: A3(author$project$Board$markBoard, index, model.board, model.currentMark)
+					board: A3(
+						author$project$Board$markBoard,
+						index,
+						model.board,
+						author$project$Player$getMark(model.currentPlayer)),
+					currentPlayer: author$project$Main$switchPlayers(model.currentPlayer)
 				}),
 			elm$core$Platform$Cmd$none);
 	});
+var elm$core$Basics$neq = _Utils_notEqual;
+var author$project$Board$cellIsNotEmpty = function (value) {
+	return value !== '';
+};
 var author$project$Main$MarkBoard = function (a) {
 	return {$: 'MarkBoard', a: a};
 };
@@ -5019,25 +5040,22 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Main$createOneButton = F2(
-	function (index, value) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onClick(
-					author$project$Main$MarkBoard(index)),
-					elm$html$Html$Attributes$disabled(false)
-				]),
-			_List_fromArray(
-				[
-					elm$html$Html$text(value)
-				]));
-	});
-var author$project$Main$turnTupleIntoButton = function (_n0) {
+var author$project$Main$createCell = function (_n0) {
 	var index = _n0.a;
 	var value = _n0.b;
-	return A2(author$project$Main$createOneButton, index, value);
+	return A2(
+		elm$html$Html$button,
+		_List_fromArray(
+			[
+				elm$html$Html$Events$onClick(
+				author$project$Main$MarkBoard(index)),
+				elm$html$Html$Attributes$disabled(
+				author$project$Board$cellIsNotEmpty(value))
+			]),
+		_List_fromArray(
+			[
+				elm$html$Html$text(value)
+			]));
 };
 var elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
@@ -5115,7 +5133,7 @@ var elm$core$Tuple$pair = F2(
 var author$project$Main$createBoardWithButtons = function (board) {
 	return A2(
 		elm$core$List$map,
-		author$project$Main$turnTupleIntoButton,
+		author$project$Main$createCell,
 		A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
 };
 var elm$html$Html$div = _VirtualDom_node('div');

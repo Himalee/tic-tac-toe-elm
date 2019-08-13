@@ -18,4 +18,10 @@ suite =
         , test "marks board with player mark given index" <|
             \() ->
                 Expect.equal [ "X", "", "O" ] <| markBoard 0 [ "", "", "O" ] "X"
+        , test "checks whether a cell is not empty" <|
+            \() ->
+                Expect.equal True <| cellIsNotEmpty "X"
+        , test "checks whether a cell is empty" <|
+            \() ->
+                Expect.equal False <| cellIsNotEmpty ""
         ]

@@ -22,3 +22,8 @@ markBoard index grid playerMark =
         |> Array.fromList
         |> Array.set index playerMark
         |> Array.toList
+
+
+cellIsNotEmpty : String -> Bool
+cellIsNotEmpty value =
+    value /= ""
