@@ -6,11 +6,13 @@
   "scripts": {
     "cypress:open": "cd integration && cypress open",
     "cypress:run": "cd integration && cypress run",
-    "test": "elm-test"
+    "start": "elm reactor",
+    "test": "elm-test && start-server-and-test start http://localhost:8000 cypress:run"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^3.4.1"
+    "cypress": "^3.4.1",
+    "start-server-and-test": "^1.10.0"
   }
 }

@@ -10,4 +10,4 @@ cache:
     - test/elm-stuff/packages
 
 script:
-  - elm-test
+  - npm run test
