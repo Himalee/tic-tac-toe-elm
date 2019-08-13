@@ -6,7 +6,6 @@
   "scripts": {
     "cypress:open": "cd integration && cypress open",
     "cypress:run": "cd integration && cypress run",
-    "start": "elm reactor",
     "test": "elm-test"
   },
   "author": "",
