@@ -7,7 +7,7 @@
     "cypress:open": "cd integration && cypress open",
     "cypress:run": "cd integration && cypress run",
     "start": "elm reactor",
-    "test": "elm-test && start-server-and-test start http://localhost:8000 cypress:run"
+    "test": "elm-test"
   },
   "author": "",
   "license": "ISC",
