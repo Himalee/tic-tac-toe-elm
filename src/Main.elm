@@ -81,8 +81,8 @@ switchPlayers player =
         X
 
 
-createBoardWithButtons : List String -> List (Html Msg)
-createBoardWithButtons board =
+createBoardWithCells : List String -> List (Html Msg)
+createBoardWithCells board =
     board
         |> List.indexedMap Tuple.pair
         |> List.map createCell
@@ -112,6 +112,6 @@ view model =
                 [ text "Welcome to Tic Tac Toe" ]
             ]
         , div [ class "gridContainer" ]
-            (createBoardWithButtons model.board)
+            (createBoardWithCells model.board)
         ]
     }
