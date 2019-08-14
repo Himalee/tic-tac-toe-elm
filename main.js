@@ -4347,6 +4347,7 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Board$emptyString = '';
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
 	function (func, baseCase, _n0) {
@@ -4451,7 +4452,7 @@ var elm$core$List$repeat = F2(
 		return A3(elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
 var author$project$Board$create = function (size) {
-	return A2(elm$core$List$repeat, size, '');
+	return A2(elm$core$List$repeat, size, author$project$Board$emptyString);
 };
 var author$project$Main$boardSize = 9;
 var author$project$Player$X = {$: 'X'};
@@ -4988,7 +4989,7 @@ var author$project$Main$update = F2(
 	});
 var elm$core$Basics$neq = _Utils_notEqual;
 var author$project$Board$cellIsNotEmpty = function (value) {
-	return value !== '';
+	return !_Utils_eq(value, author$project$Board$emptyString);
 };
 var author$project$Main$MarkBoard = function (a) {
 	return {$: 'MarkBoard', a: a};
@@ -5014,6 +5015,15 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$html$Html$button = _VirtualDom_node('button');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$json$Json$Encode$bool = _Json_wrap;
 var elm$html$Html$Attributes$boolProperty = F2(
 	function (key, bool) {
@@ -5050,7 +5060,8 @@ var author$project$Main$createCell = function (_n0) {
 				elm$html$Html$Events$onClick(
 				author$project$Main$MarkBoard(index)),
 				elm$html$Html$Attributes$disabled(
-				author$project$Board$cellIsNotEmpty(value))
+				author$project$Board$cellIsNotEmpty(value)),
+				elm$html$Html$Attributes$class('cell')
 			]),
 		_List_fromArray(
 			[
@@ -5130,7 +5141,7 @@ var elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
 	});
-var author$project$Main$createBoardWithButtons = function (board) {
+var author$project$Main$createBoardWithCells = function (board) {
 	return A2(
 		elm$core$List$map,
 		author$project$Main$createCell,
@@ -5138,15 +5149,6 @@ var author$project$Main$createBoardWithButtons = function (board) {
 };
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
-var elm$json$Json$Encode$string = _Json_wrap;
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var author$project$Main$view = function (model) {
 	return {
 		body: _List_fromArray(
@@ -5170,7 +5172,7 @@ var author$project$Main$view = function (model) {
 					[
 						elm$html$Html$Attributes$class('gridContainer')
 					]),
-				author$project$Main$createBoardWithButtons(model.board))
+				author$project$Main$createBoardWithCells(model.board))
 			]),
 		title: 'Tic Tac Toe'
 	};

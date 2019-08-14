@@ -1,6 +1,0 @@
-.gridContainer {
-  grid-template-columns: repeat(3, 100px);
-  display: grid;
-  align-items: center;
-  justify-content: center;
-}

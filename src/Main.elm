@@ -90,7 +90,7 @@ createBoardWithCells board =
 
 createCell : ( Int, String ) -> Html Msg
 createCell ( index, value ) =
-    button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value ] [ text <| value ]
+    button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value, class "cell" ] [ text <| value ]
 
 
 
