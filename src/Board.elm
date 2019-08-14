@@ -31,3 +31,12 @@ markBoard index grid playerMark =
 cellIsNotEmpty : String -> Bool
 cellIsNotEmpty value =
     value /= emptyString
+
+
+boardSize : List String -> Int
+boardSize grid =
+    grid
+        |> List.length
+        |> toFloat
+        |> sqrt
+        |> round

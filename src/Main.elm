@@ -1,11 +1,11 @@
 module Main exposing (..)
 
-import Array exposing (..)
 import Board exposing (..)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Line exposing (isGameOver, isThereADraw, isThereAWinner)
 import Player exposing (..)
 
 
@@ -29,6 +29,7 @@ main =
 type alias Model =
     { board : List String
     , currentPlayer : Player
+    , gameStatus : String
     }
 
 
@@ -36,6 +37,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = create boardSize
       , currentPlayer = X
+      , gameStatus = "keep playing"
       }
     , Cmd.none
     )
@@ -53,9 +55,20 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MarkBoard index ->
-            ( { model
-                | board = markBoard index model.board <| getMark model.currentPlayer
-                , currentPlayer = switchPlayers model.currentPlayer
+            ( let
+                nextBoard =
+                    markBoard index model.board <| getMark model.currentPlayer
+
+                currentPlayer =
+                    model.currentPlayer
+
+                nextPlayer =
+                    switchPlayers model.currentPlayer
+              in
+              { model
+                | board = nextBoard
+                , currentPlayer = nextPlayer
+                , gameStatus = getStatus nextBoard currentPlayer
               }
             , Cmd.none
             )
@@ -93,6 +106,18 @@ createCell ( index, value ) =
     button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value, class "cell" ] [ text <| value ]
 
 
+getStatus : List String -> Player -> String
+getStatus board player =
+    if isThereAWinner board player == True then
+        "Player " ++ getMark player ++ " wins!"
+
+    else if isThereADraw board player == True then
+        "It's a draw!"
+
+    else
+        "keep playing"
+
+
 
 -- VIEW
 
@@ -108,10 +133,11 @@ view model =
     { title = "Tic Tac Toe"
     , body =
         [ div []
-            [ h1 []
+            [ h1 [ class "textContent" ]
                 [ text "Welcome to Tic Tac Toe" ]
             ]
         , div [ class "gridContainer" ]
             (createBoardWithCells model.board)
+        , p [ class "gameStatus" ] [ text model.gameStatus ]
         ]
     }
