@@ -32,6 +32,3 @@ describe("the app", () => {
     cy.get('button').first().should('be.disabled')
   });
 });
-
-
-
