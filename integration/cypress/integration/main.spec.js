@@ -30,12 +30,16 @@ describe("the app", () => {
     cy.get('button').first().should('be.disabled')
   });
 
-  it("plays game until X wins and displays winning message", () => {
+  it("plays game until X wins, displays winning message, and disables empty cells", () => {
     cy.get('button').first().click()
     cy.get('button').eq(8).click()
     cy.get('button').eq(1).click()
     cy.get('button').eq(7).click()
     cy.get('button').eq(2).click()
+    cy.get('button').eq(3).should('be.disabled')
+    cy.get('button').eq(4).should('be.disabled')
+    cy.get('button').eq(5).should('be.disabled')
+    cy.get('button').eq(6).should('be.disabled')
     cy.contains('Player X wins!');
   });
 

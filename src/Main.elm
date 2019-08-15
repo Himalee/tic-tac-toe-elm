@@ -94,16 +94,17 @@ switchPlayers player =
         X
 
 
-createBoardWithCells : List String -> List (Html Msg)
-createBoardWithCells board =
+createBoardWithCells : List String -> Player -> List (Html Msg)
+createBoardWithCells board player =
     board
         |> List.indexedMap Tuple.pair
-        |> List.map createCell
+        |> List.map (\( index, value ) -> button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board player, class "cell" ] [ text <| value ])
 
 
-createCell : ( Int, String ) -> Html Msg
-createCell ( index, value ) =
-    button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value, class "cell" ] [ text <| value ]
+
+-- createCell : ( Int, String ) -> Html Msg
+-- createCell ( index, value ) =
+--     button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value, class "cell" ] [ text <| value ]
 
 
 getStatus : List String -> Player -> String
@@ -115,7 +116,7 @@ getStatus board player =
         "It's a draw!"
 
     else
-        "keep playing"
+        "Keep playing"
 
 
 
@@ -137,7 +138,7 @@ view model =
                 [ text "Welcome to Tic Tac Toe" ]
             ]
         , div [ class "gridContainer" ]
-            (createBoardWithCells model.board)
+            (createBoardWithCells model.board (switchPlayers model.currentPlayer))
         , p [ class "gameStatus" ] [ text model.gameStatus ]
         ]
     }

@@ -5378,7 +5378,7 @@ var author$project$Line$isThereADraw = F2(
 	});
 var author$project$Main$getStatus = F2(
 	function (board, player) {
-		return A2(author$project$Line$isThereAWinner, board, player) ? ('Player ' + (author$project$Player$getMark(player) + ' wins!')) : (A2(author$project$Line$isThereADraw, board, player) ? 'it\'s a draw' : 'keep playing');
+		return A2(author$project$Line$isThereAWinner, board, player) ? ('Player ' + (author$project$Player$getMark(player) + ' wins!')) : (A2(author$project$Line$isThereADraw, board, player) ? 'It\'s a draw!' : 'Keep playing');
 	});
 var author$project$Player$O = {$: 'O'};
 var author$project$Main$switchPlayers = function (player) {
@@ -5409,12 +5409,34 @@ var author$project$Main$update = F2(
 var author$project$Board$cellIsNotEmpty = function (value) {
 	return !_Utils_eq(value, author$project$Board$emptyString);
 };
+var author$project$Line$isGameOver = F2(
+	function (board, player) {
+		return A2(author$project$Line$isThereAWinner, board, player) || A2(author$project$Line$isThereADraw, board, player);
+	});
 var author$project$Main$MarkBoard = function (a) {
 	return {$: 'MarkBoard', a: a};
 };
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5468,48 +5490,30 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Main$createCell = function (_n0) {
-	var index = _n0.a;
-	var value = _n0.b;
-	return A2(
-		elm$html$Html$button,
-		_List_fromArray(
-			[
-				elm$html$Html$Events$onClick(
-				author$project$Main$MarkBoard(index)),
-				elm$html$Html$Attributes$disabled(
-				author$project$Board$cellIsNotEmpty(value)),
-				elm$html$Html$Attributes$class('cell')
-			]),
-		_List_fromArray(
-			[
-				elm$html$Html$text(value)
-			]));
-};
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
+var author$project$Main$createBoardWithCells = F2(
+	function (board, player) {
+		return A2(
+			elm$core$List$map,
+			function (_n0) {
+				var index = _n0.a;
+				var value = _n0.b;
+				return A2(
+					elm$html$Html$button,
+					_List_fromArray(
+						[
+							elm$html$Html$Events$onClick(
+							author$project$Main$MarkBoard(index)),
+							elm$html$Html$Attributes$disabled(
+							author$project$Board$cellIsNotEmpty(value) || A2(author$project$Line$isGameOver, board, player)),
+							elm$html$Html$Attributes$class('cell')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text(value)
+						]));
+			},
+			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
 	});
-var elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
-var author$project$Main$createBoardWithCells = function (board) {
-	return A2(
-		elm$core$List$map,
-		author$project$Main$createCell,
-		A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
-};
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var elm$html$Html$p = _VirtualDom_node('p');
@@ -5539,7 +5543,10 @@ var author$project$Main$view = function (model) {
 					[
 						elm$html$Html$Attributes$class('gridContainer')
 					]),
-				author$project$Main$createBoardWithCells(model.board)),
+				A2(
+					author$project$Main$createBoardWithCells,
+					model.board,
+					author$project$Main$switchPlayers(model.currentPlayer))),
 				A2(
 				elm$html$Html$p,
 				_List_fromArray(

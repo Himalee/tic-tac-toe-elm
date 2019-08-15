@@ -1,7 +1,7 @@
 module LineTest exposing (suite)
 
 import Expect
-import Line exposing (isThereADraw, isThereAWinner)
+import Line exposing (isGameOver, isThereADraw, isThereAWinner)
 import Player exposing (..)
 import Test exposing (..)
 
@@ -21,4 +21,7 @@ suite =
         , test "checks if the board result is a draw" <|
             \() ->
                 Expect.equal True <| isThereADraw [ "X", "O", "X", "O", "O", "X", "X", "X", "O" ] O
+        , test "checks if the game has ended" <|
+            \() ->
+                Expect.equal True <| isGameOver [ "X", "X", "X", "", "", "", "", "", "" ] X
         ]
