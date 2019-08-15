@@ -7,16 +7,20 @@ type GameStatus
     = InPlay
     | Winner
     | Draw
+    | GameModeNotChosen
 
 
 getGameStatus : GameStatus -> Player -> String
 getGameStatus status player =
     case status of
         InPlay ->
-            "Keep playing"
+            "Play!"
 
         Winner ->
             "Player " ++ getMark player ++ " wins!"
 
         Draw ->
             "It's a draw!"
+
+        GameModeNotChosen ->
+            "Choose a game mode"
