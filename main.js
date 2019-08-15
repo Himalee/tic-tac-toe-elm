@@ -4347,7 +4347,7 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Board$emptyString = '';
+var author$project$Cell$emptyCell = '';
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
 	function (func, baseCase, _n0) {
@@ -4452,7 +4452,7 @@ var elm$core$List$repeat = F2(
 		return A3(elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
 var author$project$Board$create = function (size) {
-	return A2(elm$core$List$repeat, size, author$project$Board$emptyString);
+	return A2(elm$core$List$repeat, size, author$project$Cell$emptyCell);
 };
 var author$project$Main$boardSize = 9;
 var author$project$Player$X = {$: 'X'};
@@ -4856,7 +4856,7 @@ var author$project$Main$init = function (_n0) {
 		{
 			board: author$project$Board$create(author$project$Main$boardSize),
 			currentPlayer: author$project$Player$X,
-			gameStatus: 'keep playing'
+			gameStatus: 'Keep playing'
 		},
 		elm$core$Platform$Cmd$none);
 };
@@ -5274,7 +5274,7 @@ var author$project$Line$diagonalLine = F4(
 						[
 							A2(
 							elm$core$Maybe$withDefault,
-							'',
+							author$project$Cell$emptyCell,
 							A2(elm$core$Array$get, currentIndex, transformedBoard))
 						])),
 					$temp$board = board,
@@ -5318,6 +5318,7 @@ var author$project$Line$allWinningLines = function (board) {
 			author$project$Line$columns(board),
 			author$project$Line$diagonals(board)));
 };
+var author$project$Player$O = {$: 'O'};
 var author$project$Player$getMark = function (player) {
 	if (player.$ === 'X') {
 		return 'X';
@@ -5359,28 +5360,34 @@ var elm$core$List$all = F2(
 			A2(elm$core$Basics$composeL, elm$core$Basics$not, isOkay),
 			list);
 	});
-var author$project$Line$isThereAWinner = F2(
-	function (board, player) {
-		return A2(
-			elm$core$List$any,
-			elm$core$List$all(
-				elm$core$Basics$eq(
-					author$project$Player$getMark(player))),
-			author$project$Line$allWinningLines(board));
-	});
+var author$project$Line$containsTheSameMark = function (line) {
+	return A2(
+		elm$core$List$all,
+		elm$core$Basics$eq(
+			author$project$Player$getMark(author$project$Player$X)),
+		line) || A2(
+		elm$core$List$all,
+		elm$core$Basics$eq(
+			author$project$Player$getMark(author$project$Player$O)),
+		line);
+};
+var author$project$Line$isThereAWinner = function (board) {
+	return A2(
+		elm$core$List$any,
+		author$project$Line$containsTheSameMark,
+		author$project$Line$allWinningLines(board));
+};
 var elm$core$Basics$neq = _Utils_notEqual;
-var author$project$Line$isThereADraw = F2(
-	function (board, player) {
-		return (!A2(author$project$Line$isThereAWinner, board, player)) && A2(
-			elm$core$List$all,
-			elm$core$Basics$neq(''),
-			board);
-	});
+var author$project$Line$isThereADraw = function (board) {
+	return (!author$project$Line$isThereAWinner(board)) && A2(
+		elm$core$List$all,
+		elm$core$Basics$neq(author$project$Cell$emptyCell),
+		board);
+};
 var author$project$Main$getStatus = F2(
 	function (board, player) {
-		return A2(author$project$Line$isThereAWinner, board, player) ? ('Player ' + (author$project$Player$getMark(player) + ' wins!')) : (A2(author$project$Line$isThereADraw, board, player) ? 'It\'s a draw!' : 'Keep playing');
+		return author$project$Line$isThereAWinner(board) ? ('Player ' + (author$project$Player$getMark(player) + ' wins!')) : (author$project$Line$isThereADraw(board) ? 'It\'s a draw!' : 'Keep playing');
 	});
-var author$project$Player$O = {$: 'O'};
 var author$project$Main$switchPlayers = function (player) {
 	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
 };
@@ -5406,13 +5413,12 @@ var author$project$Main$update = F2(
 			}(),
 			elm$core$Platform$Cmd$none);
 	});
-var author$project$Board$cellIsNotEmpty = function (value) {
-	return !_Utils_eq(value, author$project$Board$emptyString);
+var author$project$Cell$cellIsNotEmpty = function (value) {
+	return !_Utils_eq(value, author$project$Cell$emptyCell);
 };
-var author$project$Line$isGameOver = F2(
-	function (board, player) {
-		return A2(author$project$Line$isThereAWinner, board, player) || A2(author$project$Line$isThereADraw, board, player);
-	});
+var author$project$Line$isGameOver = function (board) {
+	return author$project$Line$isThereAWinner(board) || author$project$Line$isThereADraw(board);
+};
 var author$project$Main$MarkBoard = function (a) {
 	return {$: 'MarkBoard', a: a};
 };
@@ -5490,30 +5496,29 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Main$createBoardWithCells = F2(
-	function (board, player) {
-		return A2(
-			elm$core$List$map,
-			function (_n0) {
-				var index = _n0.a;
-				var value = _n0.b;
-				return A2(
-					elm$html$Html$button,
-					_List_fromArray(
-						[
-							elm$html$Html$Events$onClick(
-							author$project$Main$MarkBoard(index)),
-							elm$html$Html$Attributes$disabled(
-							author$project$Board$cellIsNotEmpty(value) || A2(author$project$Line$isGameOver, board, player)),
-							elm$html$Html$Attributes$class('cell')
-						]),
-					_List_fromArray(
-						[
-							elm$html$Html$text(value)
-						]));
-			},
-			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
-	});
+var author$project$Main$createBoardWithCells = function (board) {
+	return A2(
+		elm$core$List$map,
+		function (_n0) {
+			var index = _n0.a;
+			var value = _n0.b;
+			return A2(
+				elm$html$Html$button,
+				_List_fromArray(
+					[
+						elm$html$Html$Events$onClick(
+						author$project$Main$MarkBoard(index)),
+						elm$html$Html$Attributes$disabled(
+						author$project$Cell$cellIsNotEmpty(value) || author$project$Line$isGameOver(board)),
+						elm$html$Html$Attributes$class('cell')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(value)
+					]));
+		},
+		A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
+};
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var elm$html$Html$p = _VirtualDom_node('p');
@@ -5543,10 +5548,7 @@ var author$project$Main$view = function (model) {
 					[
 						elm$html$Html$Attributes$class('gridContainer')
 					]),
-				A2(
-					author$project$Main$createBoardWithCells,
-					model.board,
-					author$project$Main$switchPlayers(model.currentPlayer))),
+				author$project$Main$createBoardWithCells(model.board)),
 				A2(
 				elm$html$Html$p,
 				_List_fromArray(

@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Board exposing (..)
 import Browser
+import Cell exposing (cellIsNotEmpty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -37,7 +38,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = create boardSize
       , currentPlayer = X
-      , gameStatus = "keep playing"
+      , gameStatus = "Keep playing"
       }
     , Cmd.none
     )
@@ -94,25 +95,19 @@ switchPlayers player =
         X
 
 
-createBoardWithCells : List String -> Player -> List (Html Msg)
-createBoardWithCells board player =
+createBoardWithCells : List String -> List (Html Msg)
+createBoardWithCells board =
     board
         |> List.indexedMap Tuple.pair
-        |> List.map (\( index, value ) -> button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board player, class "cell" ] [ text <| value ])
-
-
-
--- createCell : ( Int, String ) -> Html Msg
--- createCell ( index, value ) =
---     button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value, class "cell" ] [ text <| value ]
+        |> List.map (\( index, value ) -> button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board, class "cell" ] [ text <| value ])
 
 
 getStatus : List String -> Player -> String
 getStatus board player =
-    if isThereAWinner board player == True then
+    if isThereAWinner board == True then
         "Player " ++ getMark player ++ " wins!"
 
-    else if isThereADraw board player == True then
+    else if isThereADraw board == True then
         "It's a draw!"
 
     else
@@ -138,7 +133,7 @@ view model =
                 [ text "Welcome to Tic Tac Toe" ]
             ]
         , div [ class "gridContainer" ]
-            (createBoardWithCells model.board (switchPlayers model.currentPlayer))
+            (createBoardWithCells model.board)
         , p [ class "gameStatus" ] [ text model.gameStatus ]
         ]
     }

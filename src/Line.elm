@@ -1,26 +1,34 @@
 module Line exposing (isGameOver, isThereADraw, isThereAWinner)
 
-import Array exposing (..)
+import Array exposing (fromList)
 import Board exposing (boardSize)
+import Cell exposing (emptyCell)
 import List exposing (all, any)
 import List.Extra exposing (groupsOf, transpose)
 import Maybe exposing (withDefault)
 import Player exposing (..)
 
 
-isThereAWinner : List String -> Player -> Bool
-isThereAWinner board player =
-    List.any (all ((==) (getMark player))) (allWinningLines board)
+isThereAWinner : List String -> Bool
+isThereAWinner board =
+    board
+        |> allWinningLines
+        |> List.any containsTheSameMark
 
 
-isThereADraw : List String -> Player -> Bool
-isThereADraw board player =
-    not (isThereAWinner board player) && List.all ((/=) "") board
+containsTheSameMark : List String -> Bool
+containsTheSameMark line =
+    List.all ((==) (getMark X)) line || List.all ((==) (getMark O)) line
 
 
-isGameOver : List String -> Player -> Bool
-isGameOver board player =
-    isThereAWinner board player || isThereADraw board player
+isThereADraw : List String -> Bool
+isThereADraw board =
+    not (isThereAWinner board) && List.all ((/=) emptyCell) board
+
+
+isGameOver : List String -> Bool
+isGameOver board =
+    isThereAWinner board || isThereADraw board
 
 
 allWinningLines : List String -> List (List String)
@@ -30,7 +38,9 @@ allWinningLines board =
 
 diagonals : List String -> List (List String)
 diagonals board =
-    [ diagonalLine [] board 0 (boardSize board + 1), diagonalLine [] board (boardSize board - 1) (boardSize board - 1) ]
+    [ diagonalLine [] board 0 (boardSize board + 1)
+    , diagonalLine [] board (boardSize board - 1) (boardSize board - 1)
+    ]
 
 
 diagonalLine : List String -> List String -> Int -> Int -> List String
@@ -43,7 +53,7 @@ diagonalLine line board currentIndex increaseIndexBy =
         line
 
     else
-        diagonalLine (line ++ [ Maybe.withDefault "" (Array.get currentIndex transformedBoard) ]) board (currentIndex + increaseIndexBy) increaseIndexBy
+        diagonalLine (line ++ [ Maybe.withDefault emptyCell (Array.get currentIndex transformedBoard) ]) board (currentIndex + increaseIndexBy) increaseIndexBy
 
 
 columns : List String -> List (List String)
