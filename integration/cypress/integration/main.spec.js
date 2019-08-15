@@ -12,7 +12,7 @@ describe("the app", () => {
     cy.get('button').should('have.length', 9)
   });
 
-  it("clicks buttons and replaces text with 'X' and displays message that game is still in play", () => {
+  it("clicks buttons, replaces text with 'X' and displays message that game is still in play", () => {
     cy.get('button').first().click()
     cy.get('button').first()
     cy.contains('X')
@@ -44,7 +44,7 @@ describe("the app", () => {
     cy.contains('Player X wins!');
   });
 
-  it("plays game until it results in a draw and displays winning message", () => {
+  it("plays game until it results in a draw and displays draw message", () => {
     cy.get('button').first().click()
     cy.get('button').eq(1).click()
     cy.get('button').eq(2).click()

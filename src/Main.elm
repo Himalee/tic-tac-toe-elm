@@ -102,15 +102,18 @@ createBoardWithCells : List String -> List (Html Msg)
 createBoardWithCells board =
     board
         |> List.indexedMap Tuple.pair
-        |> List.map (\( index, value ) -> button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board, class "cell" ] [ text <| value ])
+        |> List.map
+            (\( index, value ) ->
+                button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board, class "cell" ] [ text <| value ]
+            )
 
 
 getStatus : List String -> GameStatus
 getStatus board =
-    if isThereAWinner board == True then
+    if isThereAWinner board then
         Winner
 
-    else if isThereADraw board == True then
+    else if isThereADraw board then
         Draw
 
     else
@@ -132,7 +135,7 @@ view model =
     { title = "Tic Tac Toe"
     , body =
         [ div []
-            [ h1 [ class "textContent" ]
+            [ h1 [ class "header" ]
                 [ text "Welcome to Tic Tac Toe" ]
             ]
         , div [ class "gridContainer" ]

@@ -17,5 +17,26 @@ suite =
                 Expect.equal False <| containsTheSameMark [ "", "", "" ]
         , test "gets all potential winning lines" <|
             \() ->
-                Expect.equal [ [ "O", "", "X" ], [ "", "O", "" ], [ "", "", "O" ], [ "O", "", "" ], [ "", "O", "" ], [ "X", "", "O" ], [ "O", "O", "O" ], [ "X", "O", "" ] ] <| allWinningLines [ "O", "", "X", "", "O", "", "", "", "O" ]
+                Expect.equal
+                    [ [ "O", "", "X" ]
+                    , [ "", "O", "" ]
+                    , [ "", "", "O" ]
+                    , [ "O", "", "" ]
+                    , [ "", "O", "" ]
+                    , [ "X", "", "O" ]
+                    , [ "O", "O", "O" ]
+                    , [ "X", "O", "" ]
+                    ]
+                <|
+                    allWinningLines
+                        [ "O"
+                        , ""
+                        , "X"
+                        , ""
+                        , "O"
+                        , ""
+                        , ""
+                        , ""
+                        , "O"
+                        ]
         ]

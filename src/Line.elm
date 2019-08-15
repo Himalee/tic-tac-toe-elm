@@ -35,7 +35,13 @@ diagonalLine line board currentIndex increaseIndexBy =
         line
 
     else
-        diagonalLine (line ++ [ Maybe.withDefault emptyCell (Array.get currentIndex transformedBoard) ]) board (currentIndex + increaseIndexBy) increaseIndexBy
+        diagonalLine
+            (line
+                ++ [ Maybe.withDefault emptyCell (Array.get currentIndex transformedBoard) ]
+            )
+            board
+            (currentIndex + increaseIndexBy)
+            increaseIndexBy
 
 
 columns : List String -> List (List String)
@@ -53,7 +59,8 @@ rows board =
 
 split : Int -> List String -> List (List String)
 split size board =
-    List.Extra.groupsOf size board
+    board
+        |> List.Extra.groupsOf size
 
 
 boardSize : List String -> Int
