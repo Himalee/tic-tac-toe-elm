@@ -4454,6 +4454,7 @@ var elm$core$List$repeat = F2(
 var author$project$Board$create = function (size) {
 	return A2(elm$core$List$repeat, size, author$project$Cell$emptyCell);
 };
+var author$project$GameStatus$InPlay = {$: 'InPlay'};
 var author$project$Main$boardSize = 9;
 var author$project$Player$X = {$: 'X'};
 var elm$core$Basics$False = {$: 'False'};
@@ -4856,7 +4857,7 @@ var author$project$Main$init = function (_n0) {
 		{
 			board: author$project$Board$create(author$project$Main$boardSize),
 			currentPlayer: author$project$Player$X,
-			gameStatus: 'Keep playing'
+			gameStatus: author$project$GameStatus$InPlay
 		},
 		elm$core$Platform$Cmd$none);
 };
@@ -4963,7 +4964,7 @@ var author$project$Board$markBoard = F3(
 	});
 var elm$core$Basics$round = _Basics_round;
 var elm$core$Basics$sqrt = _Basics_sqrt;
-var author$project$Board$boardSize = function (grid) {
+var author$project$Line$boardSize = function (grid) {
 	return elm$core$Basics$round(
 		elm$core$Basics$sqrt(
 			elm$core$List$length(grid)));
@@ -5213,7 +5214,7 @@ var author$project$Line$columns = function (board) {
 	return elm_community$list_extra$List$Extra$transpose(
 		A2(
 			author$project$Line$split,
-			author$project$Board$boardSize(board),
+			author$project$Line$boardSize(board),
 			board));
 };
 var elm$core$Array$getHelp = F3(
@@ -5265,7 +5266,7 @@ var author$project$Line$diagonalLine = F4(
 			var transformedBoard = elm$core$Array$fromList(board);
 			if (_Utils_eq(
 				elm$core$List$length(line),
-				author$project$Board$boardSize(board))) {
+				author$project$Line$boardSize(board))) {
 				return line;
 			} else {
 				var $temp$line = _Utils_ap(
@@ -5296,19 +5297,19 @@ var author$project$Line$diagonals = function (board) {
 			_List_Nil,
 			board,
 			0,
-			author$project$Board$boardSize(board) + 1),
+			author$project$Line$boardSize(board) + 1),
 			A4(
 			author$project$Line$diagonalLine,
 			_List_Nil,
 			board,
-			author$project$Board$boardSize(board) - 1,
-			author$project$Board$boardSize(board) - 1)
+			author$project$Line$boardSize(board) - 1,
+			author$project$Line$boardSize(board) - 1)
 		]);
 };
 var author$project$Line$rows = function (board) {
 	return A2(
 		author$project$Line$split,
-		author$project$Board$boardSize(board),
+		author$project$Line$boardSize(board),
 		board);
 };
 var author$project$Line$allWinningLines = function (board) {
@@ -5371,22 +5372,24 @@ var author$project$Line$containsTheSameMark = function (line) {
 			author$project$Player$getMark(author$project$Player$O)),
 		line);
 };
-var author$project$Line$isThereAWinner = function (board) {
+var author$project$Board$isThereAWinner = function (board) {
 	return A2(
 		elm$core$List$any,
 		author$project$Line$containsTheSameMark,
 		author$project$Line$allWinningLines(board));
 };
 var elm$core$Basics$neq = _Utils_notEqual;
-var author$project$Line$isThereADraw = function (board) {
-	return (!author$project$Line$isThereAWinner(board)) && A2(
+var author$project$Board$isThereADraw = function (board) {
+	return (!author$project$Board$isThereAWinner(board)) && A2(
 		elm$core$List$all,
 		elm$core$Basics$neq(author$project$Cell$emptyCell),
 		board);
 };
+var author$project$GameStatus$Draw = {$: 'Draw'};
+var author$project$GameStatus$Winner = {$: 'Winner'};
 var author$project$Main$getStatus = F2(
 	function (board, player) {
-		return author$project$Line$isThereAWinner(board) ? ('Player ' + (author$project$Player$getMark(player) + ' wins!')) : (author$project$Line$isThereADraw(board) ? 'It\'s a draw!' : 'Keep playing');
+		return author$project$Board$isThereAWinner(board) ? author$project$GameStatus$Winner : (author$project$Board$isThereADraw(board) ? author$project$GameStatus$Draw : author$project$GameStatus$InPlay);
 	});
 var author$project$Main$switchPlayers = function (player) {
 	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
@@ -5413,11 +5416,22 @@ var author$project$Main$update = F2(
 			}(),
 			elm$core$Platform$Cmd$none);
 	});
+var author$project$GameStatus$getGameStatus = F2(
+	function (status, player) {
+		switch (status.$) {
+			case 'InPlay':
+				return 'Keep playing';
+			case 'Winner':
+				return 'Player ' + (author$project$Player$getMark(player) + ' wins!');
+			default:
+				return 'It\'s a draw!';
+		}
+	});
+var author$project$Board$isGameOver = function (board) {
+	return author$project$Board$isThereAWinner(board) || author$project$Board$isThereADraw(board);
+};
 var author$project$Cell$cellIsNotEmpty = function (value) {
 	return !_Utils_eq(value, author$project$Cell$emptyCell);
-};
-var author$project$Line$isGameOver = function (board) {
-	return author$project$Line$isThereAWinner(board) || author$project$Line$isThereADraw(board);
 };
 var author$project$Main$MarkBoard = function (a) {
 	return {$: 'MarkBoard', a: a};
@@ -5509,7 +5523,7 @@ var author$project$Main$createBoardWithCells = function (board) {
 						elm$html$Html$Events$onClick(
 						author$project$Main$MarkBoard(index)),
 						elm$html$Html$Attributes$disabled(
-						author$project$Cell$cellIsNotEmpty(value) || author$project$Line$isGameOver(board)),
+						author$project$Cell$cellIsNotEmpty(value) || author$project$Board$isGameOver(board)),
 						elm$html$Html$Attributes$class('cell')
 					]),
 				_List_fromArray(
@@ -5557,7 +5571,8 @@ var author$project$Main$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						elm$html$Html$text(model.gameStatus)
+						elm$html$Html$text(
+						A2(author$project$GameStatus$getGameStatus, model.gameStatus, model.currentPlayer))
 					]))
 			]),
 		title: 'Tic Tac Toe'

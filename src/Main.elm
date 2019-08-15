@@ -3,6 +3,7 @@ module Main exposing (..)
 import Board exposing (..)
 import Browser
 import Cell exposing (cellIsNotEmpty)
+import GameStatus exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -29,7 +30,8 @@ main =
 type alias Model =
     { board : List String
     , currentPlayer : Player
-    , gameStatus : String
+    , nextPlayer : Player
+    , gameStatus : GameStatus
     }
 
 
@@ -37,7 +39,8 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = create boardSize
       , currentPlayer = X
-      , gameStatus = "Keep playing"
+      , nextPlayer = O
+      , gameStatus = InPlay
       }
     , Cmd.none
     )
@@ -68,7 +71,8 @@ update msg model =
               { model
                 | board = nextBoard
                 , currentPlayer = nextPlayer
-                , gameStatus = getStatus nextBoard currentPlayer
+                , nextPlayer = currentPlayer
+                , gameStatus = getStatus nextBoard
               }
             , Cmd.none
             )
@@ -101,16 +105,16 @@ createBoardWithCells board =
         |> List.map (\( index, value ) -> button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board, class "cell" ] [ text <| value ])
 
 
-getStatus : List String -> Player -> String
-getStatus board player =
+getStatus : List String -> GameStatus
+getStatus board =
     if isThereAWinner board == True then
-        "Player " ++ getMark player ++ " wins!"
+        Winner
 
     else if isThereADraw board == True then
-        "It's a draw!"
+        Draw
 
     else
-        "Keep playing"
+        InPlay
 
 
 
@@ -133,6 +137,6 @@ view model =
             ]
         , div [ class "gridContainer" ]
             (createBoardWithCells model.board)
-        , p [ class "gameStatus" ] [ text model.gameStatus ]
+        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus model.nextPlayer) ]
         ]
     }

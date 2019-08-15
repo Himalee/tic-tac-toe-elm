@@ -12,10 +12,11 @@ describe("the app", () => {
     cy.get('button').should('have.length', 9)
   });
 
-  it("clicks buttons and replaces text with 'X'", () => {
+  it("clicks buttons and replaces text with 'X' and displays message that game is still in play", () => {
     cy.get('button').first().click()
     cy.get('button').first()
     cy.contains('X')
+    cy.contains('Keep playing');
   });
 
   it("player marks are switched when clicking board buttons", () => {
