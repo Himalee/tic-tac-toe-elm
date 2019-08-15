@@ -1,8 +1,9 @@
 module Main exposing (..)
 
-import Array exposing (..)
 import Board exposing (..)
 import Browser
+import Cell exposing (cellIsNotEmpty)
+import GameStatus exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -29,6 +30,8 @@ main =
 type alias Model =
     { board : List String
     , currentPlayer : Player
+    , nextPlayer : Player
+    , gameStatus : GameStatus
     }
 
 
@@ -36,6 +39,8 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = create boardSize
       , currentPlayer = X
+      , nextPlayer = O
+      , gameStatus = InPlay
       }
     , Cmd.none
     )
@@ -53,9 +58,21 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MarkBoard index ->
-            ( { model
-                | board = markBoard index model.board <| getMark model.currentPlayer
-                , currentPlayer = switchPlayers model.currentPlayer
+            ( let
+                nextBoard =
+                    markBoard index model.board <| getMark model.currentPlayer
+
+                currentPlayer =
+                    model.currentPlayer
+
+                nextPlayer =
+                    switchPlayers model.currentPlayer
+              in
+              { model
+                | board = nextBoard
+                , currentPlayer = nextPlayer
+                , nextPlayer = currentPlayer
+                , gameStatus = getStatus nextBoard
               }
             , Cmd.none
             )
@@ -81,16 +98,26 @@ switchPlayers player =
         X
 
 
-createBoardWithButtons : List String -> List (Html Msg)
-createBoardWithButtons board =
+createBoardWithCells : List String -> List (Html Msg)
+createBoardWithCells board =
     board
         |> List.indexedMap Tuple.pair
-        |> List.map createCell
+        |> List.map
+            (\( index, value ) ->
+                button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board, class "cell" ] [ text <| value ]
+            )
 
 
-createCell : ( Int, String ) -> Html Msg
-createCell ( index, value ) =
-    button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value ] [ text <| value ]
+getStatus : List String -> GameStatus
+getStatus board =
+    if isThereAWinner board then
+        Winner
+
+    else if isThereADraw board then
+        Draw
+
+    else
+        InPlay
 
 
 
@@ -108,10 +135,11 @@ view model =
     { title = "Tic Tac Toe"
     , body =
         [ div []
-            [ h1 []
+            [ h1 [ class "header" ]
                 [ text "Welcome to Tic Tac Toe" ]
             ]
         , div [ class "gridContainer" ]
-            (createBoardWithButtons model.board)
+            (createBoardWithCells model.board)
+        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus model.nextPlayer) ]
         ]
     }

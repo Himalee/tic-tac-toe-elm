@@ -4347,6 +4347,7 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Cell$emptyCell = '';
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
 	function (func, baseCase, _n0) {
@@ -4451,8 +4452,9 @@ var elm$core$List$repeat = F2(
 		return A3(elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
 var author$project$Board$create = function (size) {
-	return A2(elm$core$List$repeat, size, '');
+	return A2(elm$core$List$repeat, size, author$project$Cell$emptyCell);
 };
+var author$project$GameStatus$InPlay = {$: 'InPlay'};
 var author$project$Main$boardSize = 9;
 var author$project$Player$X = {$: 'X'};
 var elm$core$Basics$False = {$: 'False'};
@@ -4854,7 +4856,8 @@ var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
 		{
 			board: author$project$Board$create(author$project$Main$boardSize),
-			currentPlayer: author$project$Player$X
+			currentPlayer: author$project$Player$X,
+			gameStatus: author$project$GameStatus$InPlay
 		},
 		elm$core$Platform$Cmd$none);
 };
@@ -4959,104 +4962,181 @@ var author$project$Board$markBoard = F3(
 				playerMark,
 				elm$core$Array$fromList(grid)));
 	});
-var author$project$Player$O = {$: 'O'};
-var author$project$Main$switchPlayers = function (player) {
-	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
+var elm$core$Basics$round = _Basics_round;
+var elm$core$Basics$sqrt = _Basics_sqrt;
+var author$project$Line$boardSize = function (grid) {
+	return elm$core$Basics$round(
+		elm$core$Basics$sqrt(
+			elm$core$List$length(grid)));
 };
-var author$project$Player$getMark = function (player) {
-	if (player.$ === 'X') {
-		return 'X';
-	} else {
-		return 'O';
-	}
-};
-var author$project$Main$update = F2(
-	function (msg, model) {
-		var index = msg.a;
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{
-					board: A3(
-						author$project$Board$markBoard,
-						index,
-						model.board,
-						author$project$Player$getMark(model.currentPlayer)),
-					currentPlayer: author$project$Main$switchPlayers(model.currentPlayer)
-				}),
-			elm$core$Platform$Cmd$none);
+var elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
 	});
-var elm$core$Basics$neq = _Utils_notEqual;
-var author$project$Board$cellIsNotEmpty = function (value) {
-	return value !== '';
-};
-var author$project$Main$MarkBoard = function (a) {
-	return {$: 'MarkBoard', a: a};
-};
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
-var elm$json$Json$Decode$map = _Json_map1;
-var elm$json$Json$Decode$map2 = _Json_map2;
-var elm$json$Json$Decode$succeed = _Json_succeed;
-var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
-	switch (handler.$) {
-		case 'Normal':
-			return 0;
-		case 'MayStopPropagation':
-			return 1;
-		case 'MayPreventDefault':
-			return 2;
-		default:
-			return 3;
-	}
-};
-var elm$html$Html$button = _VirtualDom_node('button');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var elm$json$Json$Encode$bool = _Json_wrap;
-var elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$bool(bool));
+var elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2(elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
 	});
-var elm$html$Html$Attributes$disabled = elm$html$Html$Attributes$boolProperty('disabled');
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
+var elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return elm$core$List$reverse(
+			A3(elm$core$List$takeReverse, n, list, _List_Nil));
 	});
-var elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'click',
-		elm$json$Json$Decode$succeed(msg));
-};
-var author$project$Main$createCell = function (_n0) {
-	var index = _n0.a;
-	var value = _n0.b;
-	return A2(
-		elm$html$Html$button,
-		_List_fromArray(
-			[
-				elm$html$Html$Events$onClick(
-				author$project$Main$MarkBoard(index)),
-				elm$html$Html$Attributes$disabled(
-				author$project$Board$cellIsNotEmpty(value))
-			]),
-		_List_fromArray(
-			[
-				elm$html$Html$text(value)
-			]));
-};
+var elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _n0 = _Utils_Tuple2(n, list);
+			_n0$1:
+			while (true) {
+				_n0$5:
+				while (true) {
+					if (!_n0.b.b) {
+						return list;
+					} else {
+						if (_n0.b.b.b) {
+							switch (_n0.a) {
+								case 1:
+									break _n0$1;
+								case 2:
+									var _n2 = _n0.b;
+									var x = _n2.a;
+									var _n3 = _n2.b;
+									var y = _n3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_n0.b.b.b.b) {
+										var _n4 = _n0.b;
+										var x = _n4.a;
+										var _n5 = _n4.b;
+										var y = _n5.a;
+										var _n6 = _n5.b;
+										var z = _n6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _n0$5;
+									}
+								default:
+									if (_n0.b.b.b.b && _n0.b.b.b.b.b) {
+										var _n7 = _n0.b;
+										var x = _n7.a;
+										var _n8 = _n7.b;
+										var y = _n8.a;
+										var _n9 = _n8.b;
+										var z = _n9.a;
+										var _n10 = _n9.b;
+										var w = _n10.a;
+										var tl = _n10.b;
+										return (ctr > 1000) ? A2(
+											elm$core$List$cons,
+											x,
+											A2(
+												elm$core$List$cons,
+												y,
+												A2(
+													elm$core$List$cons,
+													z,
+													A2(
+														elm$core$List$cons,
+														w,
+														A2(elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											elm$core$List$cons,
+											x,
+											A2(
+												elm$core$List$cons,
+												y,
+												A2(
+													elm$core$List$cons,
+													z,
+													A2(
+														elm$core$List$cons,
+														w,
+														A3(elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _n0$5;
+									}
+							}
+						} else {
+							if (_n0.a === 1) {
+								break _n0$1;
+							} else {
+								break _n0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _n1 = _n0.b;
+			var x = _n1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var elm$core$List$take = F2(
+	function (n, list) {
+		return A3(elm$core$List$takeFast, 0, n, list);
+	});
+var elm_community$list_extra$List$Extra$groupsOfWithStep = F3(
+	function (size, step, xs) {
+		var xs_ = A2(elm$core$List$drop, step, xs);
+		var thisGroup = A2(elm$core$List$take, size, xs);
+		var okayLength = _Utils_eq(
+			size,
+			elm$core$List$length(thisGroup));
+		var okayArgs = (size > 0) && (step > 0);
+		return (okayArgs && okayLength) ? A2(
+			elm$core$List$cons,
+			thisGroup,
+			A3(elm_community$list_extra$List$Extra$groupsOfWithStep, size, step, xs_)) : _List_Nil;
+	});
+var elm_community$list_extra$List$Extra$groupsOf = F2(
+	function (size, xs) {
+		return A3(elm_community$list_extra$List$Extra$groupsOfWithStep, size, size, xs);
+	});
+var author$project$Line$split = F2(
+	function (size, board) {
+		return A2(elm_community$list_extra$List$Extra$groupsOf, size, board);
+	});
 var elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5112,6 +5192,253 @@ var elm$core$List$foldr = F3(
 	function (fn, acc, ls) {
 		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
 	});
+var elm_community$list_extra$List$Extra$rowsLength = function (listOfLists) {
+	if (!listOfLists.b) {
+		return 0;
+	} else {
+		var x = listOfLists.a;
+		return elm$core$List$length(x);
+	}
+};
+var elm_community$list_extra$List$Extra$transpose = function (listOfLists) {
+	return A3(
+		elm$core$List$foldr,
+		elm$core$List$map2(elm$core$List$cons),
+		A2(
+			elm$core$List$repeat,
+			elm_community$list_extra$List$Extra$rowsLength(listOfLists),
+			_List_Nil),
+		listOfLists);
+};
+var author$project$Line$columns = function (board) {
+	return elm_community$list_extra$List$Extra$transpose(
+		A2(
+			author$project$Line$split,
+			author$project$Line$boardSize(board),
+			board));
+};
+var elm$core$Array$getHelp = F3(
+	function (shift, index, tree) {
+		getHelp:
+		while (true) {
+			var pos = elm$core$Array$bitMask & (index >>> shift);
+			var _n0 = A2(elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (_n0.$ === 'SubTree') {
+				var subTree = _n0.a;
+				var $temp$shift = shift - elm$core$Array$shiftStep,
+					$temp$index = index,
+					$temp$tree = subTree;
+				shift = $temp$shift;
+				index = $temp$index;
+				tree = $temp$tree;
+				continue getHelp;
+			} else {
+				var values = _n0.a;
+				return A2(elm$core$Elm$JsArray$unsafeGet, elm$core$Array$bitMask & index, values);
+			}
+		}
+	});
+var elm$core$Array$get = F2(
+	function (index, _n0) {
+		var len = _n0.a;
+		var startShift = _n0.b;
+		var tree = _n0.c;
+		var tail = _n0.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? elm$core$Maybe$Nothing : ((_Utils_cmp(
+			index,
+			elm$core$Array$tailIndex(len)) > -1) ? elm$core$Maybe$Just(
+			A2(elm$core$Elm$JsArray$unsafeGet, elm$core$Array$bitMask & index, tail)) : elm$core$Maybe$Just(
+			A3(elm$core$Array$getHelp, startShift, index, tree)));
+	});
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var author$project$Line$diagonalLine = F4(
+	function (line, board, currentIndex, increaseIndexBy) {
+		diagonalLine:
+		while (true) {
+			var transformedBoard = elm$core$Array$fromList(board);
+			if (_Utils_eq(
+				elm$core$List$length(line),
+				author$project$Line$boardSize(board))) {
+				return line;
+			} else {
+				var $temp$line = _Utils_ap(
+					line,
+					_List_fromArray(
+						[
+							A2(
+							elm$core$Maybe$withDefault,
+							author$project$Cell$emptyCell,
+							A2(elm$core$Array$get, currentIndex, transformedBoard))
+						])),
+					$temp$board = board,
+					$temp$currentIndex = currentIndex + increaseIndexBy,
+					$temp$increaseIndexBy = increaseIndexBy;
+				line = $temp$line;
+				board = $temp$board;
+				currentIndex = $temp$currentIndex;
+				increaseIndexBy = $temp$increaseIndexBy;
+				continue diagonalLine;
+			}
+		}
+	});
+var author$project$Line$diagonals = function (board) {
+	return _List_fromArray(
+		[
+			A4(
+			author$project$Line$diagonalLine,
+			_List_Nil,
+			board,
+			0,
+			author$project$Line$boardSize(board) + 1),
+			A4(
+			author$project$Line$diagonalLine,
+			_List_Nil,
+			board,
+			author$project$Line$boardSize(board) - 1,
+			author$project$Line$boardSize(board) - 1)
+		]);
+};
+var author$project$Line$rows = function (board) {
+	return A2(
+		author$project$Line$split,
+		author$project$Line$boardSize(board),
+		board);
+};
+var author$project$Line$allWinningLines = function (board) {
+	return _Utils_ap(
+		author$project$Line$rows(board),
+		_Utils_ap(
+			author$project$Line$columns(board),
+			author$project$Line$diagonals(board)));
+};
+var author$project$Player$O = {$: 'O'};
+var author$project$Player$getMark = function (player) {
+	if (player.$ === 'X') {
+		return 'X';
+	} else {
+		return 'O';
+	}
+};
+var elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var elm$core$Basics$not = _Basics_not;
+var elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			elm$core$List$any,
+			A2(elm$core$Basics$composeL, elm$core$Basics$not, isOkay),
+			list);
+	});
+var author$project$Line$containsTheSameMark = function (line) {
+	return A2(
+		elm$core$List$all,
+		elm$core$Basics$eq(
+			author$project$Player$getMark(author$project$Player$X)),
+		line) || A2(
+		elm$core$List$all,
+		elm$core$Basics$eq(
+			author$project$Player$getMark(author$project$Player$O)),
+		line);
+};
+var author$project$Board$isThereAWinner = function (board) {
+	return A2(
+		elm$core$List$any,
+		author$project$Line$containsTheSameMark,
+		author$project$Line$allWinningLines(board));
+};
+var elm$core$Basics$neq = _Utils_notEqual;
+var author$project$Board$isThereADraw = function (board) {
+	return (!author$project$Board$isThereAWinner(board)) && A2(
+		elm$core$List$all,
+		elm$core$Basics$neq(author$project$Cell$emptyCell),
+		board);
+};
+var author$project$GameStatus$Draw = {$: 'Draw'};
+var author$project$GameStatus$Winner = {$: 'Winner'};
+var author$project$Main$getStatus = F2(
+	function (board, player) {
+		return author$project$Board$isThereAWinner(board) ? author$project$GameStatus$Winner : (author$project$Board$isThereADraw(board) ? author$project$GameStatus$Draw : author$project$GameStatus$InPlay);
+	});
+var author$project$Main$switchPlayers = function (player) {
+	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
+};
+var author$project$Main$update = F2(
+	function (msg, model) {
+		var index = msg.a;
+		return _Utils_Tuple2(
+			function () {
+				var nextPlayer = author$project$Main$switchPlayers(model.currentPlayer);
+				var nextBoard = A3(
+					author$project$Board$markBoard,
+					index,
+					model.board,
+					author$project$Player$getMark(model.currentPlayer));
+				var currentPlayer = model.currentPlayer;
+				return _Utils_update(
+					model,
+					{
+						board: nextBoard,
+						currentPlayer: nextPlayer,
+						gameStatus: A2(author$project$Main$getStatus, nextBoard, currentPlayer)
+					});
+			}(),
+			elm$core$Platform$Cmd$none);
+	});
+var author$project$GameStatus$getGameStatus = F2(
+	function (status, player) {
+		switch (status.$) {
+			case 'InPlay':
+				return 'Keep playing';
+			case 'Winner':
+				return 'Player ' + (author$project$Player$getMark(player) + ' wins!');
+			default:
+				return 'It\'s a draw!';
+		}
+	});
+var author$project$Board$isGameOver = function (board) {
+	return author$project$Board$isThereAWinner(board) || author$project$Board$isThereADraw(board);
+};
+var author$project$Cell$cellIsNotEmpty = function (value) {
+	return !_Utils_eq(value, author$project$Cell$emptyCell);
+};
+var author$project$Main$MarkBoard = function (a) {
+	return {$: 'MarkBoard', a: a};
+};
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
 var elm$core$List$map = F2(
 	function (f, xs) {
 		return A3(
@@ -5130,14 +5457,24 @@ var elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
 	});
-var author$project$Main$createBoardWithButtons = function (board) {
-	return A2(
-		elm$core$List$map,
-		author$project$Main$createCell,
-		A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$map2 = _Json_map2;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
+	switch (handler.$) {
+		case 'Normal':
+			return 0;
+		case 'MayStopPropagation':
+			return 1;
+		case 'MayPreventDefault':
+			return 2;
+		default:
+			return 3;
+	}
 };
-var elm$html$Html$div = _VirtualDom_node('div');
-var elm$html$Html$h1 = _VirtualDom_node('h1');
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5147,6 +5484,58 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			elm$json$Json$Encode$string(string));
 	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var elm$json$Json$Encode$bool = _Json_wrap;
+var elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$bool(bool));
+	});
+var elm$html$Html$Attributes$disabled = elm$html$Html$Attributes$boolProperty('disabled');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var author$project$Main$createBoardWithCells = function (board) {
+	return A2(
+		elm$core$List$map,
+		function (_n0) {
+			var index = _n0.a;
+			var value = _n0.b;
+			return A2(
+				elm$html$Html$button,
+				_List_fromArray(
+					[
+						elm$html$Html$Events$onClick(
+						author$project$Main$MarkBoard(index)),
+						elm$html$Html$Attributes$disabled(
+						author$project$Cell$cellIsNotEmpty(value) || author$project$Board$isGameOver(board)),
+						elm$html$Html$Attributes$class('cell')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(value)
+					]));
+		},
+		A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board));
+};
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$html$Html$h1 = _VirtualDom_node('h1');
+var elm$html$Html$p = _VirtualDom_node('p');
 var author$project$Main$view = function (model) {
 	return {
 		body: _List_fromArray(
@@ -5158,7 +5547,10 @@ var author$project$Main$view = function (model) {
 					[
 						A2(
 						elm$html$Html$h1,
-						_List_Nil,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('textContent')
+							]),
 						_List_fromArray(
 							[
 								elm$html$Html$text('Welcome to Tic Tac Toe')
@@ -5170,7 +5562,18 @@ var author$project$Main$view = function (model) {
 					[
 						elm$html$Html$Attributes$class('gridContainer')
 					]),
-				author$project$Main$createBoardWithButtons(model.board))
+				author$project$Main$createBoardWithCells(model.board)),
+				A2(
+				elm$html$Html$p,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('gameStatus')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(
+						A2(author$project$GameStatus$getGameStatus, model.gameStatus, model.currentPlayer))
+					]))
 			]),
 		title: 'Tic Tac Toe'
 	};
