@@ -4967,6 +4967,7 @@ var author$project$Board$markBoard = F3(
 				elm$core$Array$fromList(grid)));
 	});
 var author$project$GameMode$HumanvHuman = {$: 'HumanvHuman'};
+var author$project$GameMode$HumanvRandom = {$: 'HumanvRandom'};
 var author$project$GameStatus$InPlay = {$: 'InPlay'};
 var elm$core$Basics$round = _Basics_round;
 var elm$core$Basics$sqrt = _Basics_sqrt;
@@ -5399,6 +5400,71 @@ var author$project$Main$getStatus = F2(
 var author$project$Main$switchPlayers = function (player) {
 	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
 };
+var author$project$Board$defaultIndexIfCellIsNotEmpty = 55;
+var author$project$Board$getIndexIfValueIsEmpty = function (_n0) {
+	var index = _n0.a;
+	var value = _n0.b;
+	return _Utils_eq(value, author$project$Cell$emptyCell) ? index : author$project$Board$defaultIndexIfCellIsNotEmpty;
+};
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var elm_community$list_extra$List$Extra$dropWhile = F2(
+	function (predicate, list) {
+		dropWhile:
+		while (true) {
+			if (!list.b) {
+				return _List_Nil;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (predicate(x)) {
+					var $temp$predicate = predicate,
+						$temp$list = xs;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue dropWhile;
+				} else {
+					return list;
+				}
+			}
+		}
+	});
+var author$project$Board$availableMoves = function (board) {
+	return A2(
+		elm_community$list_extra$List$Extra$dropWhile,
+		elm$core$Basics$eq(author$project$Board$defaultIndexIfCellIsNotEmpty),
+		A2(
+			elm$core$List$map,
+			author$project$Board$getIndexIfValueIsEmpty,
+			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)));
+};
+var author$project$RandomComputerPlayer$defaultRandomMove = 0;
+var author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove = function (board) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		author$project$RandomComputerPlayer$defaultRandomMove,
+		A2(
+			elm$core$Array$get,
+			0,
+			elm$core$Array$fromList(
+				author$project$Board$availableMoves(board))));
+};
 var author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'SetGameMode') {
@@ -5435,11 +5501,35 @@ var author$project$Main$update = F2(
 							nextPlayer: currentPlayer
 						});
 				}(),
+				elm$core$Platform$Cmd$none) : (_Utils_eq(model.gameMode, author$project$GameMode$HumanvRandom) ? _Utils_Tuple2(
+				function () {
+					var nextPlayer = author$project$Main$switchPlayers(model.currentPlayer);
+					var humanMarkedBoard = A3(
+						author$project$Board$markBoard,
+						index,
+						model.board,
+						author$project$Player$getMark(model.currentPlayer));
+					var nextBoard = A3(
+						author$project$Board$markBoard,
+						author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(humanMarkedBoard),
+						humanMarkedBoard,
+						author$project$Player$getMark(model.nextPlayer));
+					var gameMode = model.gameMode;
+					var currentPlayer = model.currentPlayer;
+					return _Utils_update(
+						model,
+						{
+							board: nextBoard,
+							currentPlayer: currentPlayer,
+							gameStatus: A2(author$project$Main$getStatus, nextBoard, gameMode),
+							nextPlayer: nextPlayer
+						});
+				}(),
 				elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{board: model.board}),
-				elm$core$Platform$Cmd$none);
+				elm$core$Platform$Cmd$none));
 		}
 	});
 var author$project$GameStatus$getGameStatus = F2(
@@ -5464,24 +5554,6 @@ var author$project$Cell$cellIsNotEmpty = function (value) {
 var author$project$Main$MarkBoard = function (a) {
 	return {$: 'MarkBoard', a: a};
 };
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
-var elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -5522,6 +5594,7 @@ var elm$html$Html$Attributes$boolProperty = F2(
 			elm$json$Json$Encode$bool(bool));
 	});
 var elm$html$Html$Attributes$disabled = elm$html$Html$Attributes$boolProperty('disabled');
+var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5554,7 +5627,9 @@ var author$project$Main$createBoardWithCells = F2(
 							author$project$Main$MarkBoard(index)),
 							elm$html$Html$Attributes$disabled(
 							author$project$Cell$cellIsNotEmpty(value) || author$project$Board$isGameOver(board)),
-							elm$html$Html$Attributes$class('cell')
+							elm$html$Html$Attributes$class('cell'),
+							elm$html$Html$Attributes$id(
+							'cell' + elm$core$String$fromInt(index))
 						]),
 					_List_fromArray(
 						[
@@ -5603,6 +5678,18 @@ var author$project$Main$createGameModeButtons = F2(
 					[
 						elm$html$Html$text(
 						author$project$GameMode$getGameMode(author$project$GameMode$HumanvHuman))
+					])),
+				A2(
+				elm$html$Html$button,
+				_List_fromArray(
+					[
+						elm$html$Html$Events$onClick(
+						author$project$Main$SetGameMode(author$project$GameMode$HumanvRandom))
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(
+						author$project$GameMode$getGameMode(author$project$GameMode$HumanvRandom))
 					]))
 			]) : _List_fromArray(
 			[

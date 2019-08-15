@@ -32,4 +32,7 @@ suite =
         , test "checks if the game has ended" <|
             \() ->
                 Expect.equal True <| isGameOver [ "X", "X", "X", "", "", "", "", "", "" ]
+        , test "gets list of index of available moves" <|
+            \() ->
+                Expect.equal [ 3, 4, 5, 6, 7, 8 ] <| availableMoves [ "X", "O", "X", "", "", "", "", "", "" ]
         ]

@@ -3,6 +3,11 @@ module Board exposing (..)
 import Array exposing (fromList, set, toList)
 import Cell exposing (emptyCell)
 import Line exposing (allWinningLines, containsTheSameMark)
+import List.Extra exposing (dropWhile)
+
+
+defaultIndexIfCellIsNotEmpty =
+    55
 
 
 create : Int -> List String
@@ -33,3 +38,20 @@ isThereADraw board =
 isGameOver : List String -> Bool
 isGameOver board =
     isThereAWinner board || isThereADraw board
+
+
+availableMoves : List String -> List Int
+availableMoves board =
+    board
+        |> List.indexedMap Tuple.pair
+        |> List.map getIndexIfValueIsEmpty
+        |> List.Extra.dropWhile ((==) defaultIndexIfCellIsNotEmpty)
+
+
+getIndexIfValueIsEmpty : ( Int, String ) -> Int
+getIndexIfValueIsEmpty ( index, value ) =
+    if value == emptyCell then
+        index
+
+    else
+        defaultIndexIfCellIsNotEmpty
