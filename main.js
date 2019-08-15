@@ -4966,7 +4966,6 @@ var author$project$Board$markBoard = F3(
 				playerMark,
 				elm$core$Array$fromList(grid)));
 	});
-var author$project$GameMode$HumanvHuman = {$: 'HumanvHuman'};
 var author$project$GameMode$HumanvRandom = {$: 'HumanvRandom'};
 var author$project$GameStatus$InPlay = {$: 'InPlay'};
 var elm$core$Basics$round = _Basics_round;
@@ -5482,7 +5481,7 @@ var author$project$Main$update = F2(
 				elm$core$Platform$Cmd$none);
 		} else {
 			var index = msg.a;
-			return _Utils_eq(model.gameMode, author$project$GameMode$HumanvHuman) ? _Utils_Tuple2(
+			return _Utils_Tuple2(
 				function () {
 					var nextPlayer = author$project$Main$switchPlayers(model.currentPlayer);
 					var nextBoard = A3(
@@ -5492,44 +5491,37 @@ var author$project$Main$update = F2(
 						author$project$Player$getMark(model.currentPlayer));
 					var gameMode = model.gameMode;
 					var currentPlayer = model.currentPlayer;
-					return _Utils_update(
-						model,
-						{
-							board: nextBoard,
-							currentPlayer: nextPlayer,
-							gameStatus: A2(author$project$Main$getStatus, nextBoard, gameMode),
-							nextPlayer: currentPlayer
-						});
+					if (_Utils_eq(model.gameMode, author$project$GameMode$HumanvRandom)) {
+						var humanMarkedBoard = A3(
+							author$project$Board$markBoard,
+							index,
+							model.board,
+							author$project$Player$getMark(model.currentPlayer));
+						var newNextBoard = A3(
+							author$project$Board$markBoard,
+							author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(humanMarkedBoard),
+							humanMarkedBoard,
+							author$project$Player$getMark(model.nextPlayer));
+						return _Utils_update(
+							model,
+							{
+								board: newNextBoard,
+								currentPlayer: currentPlayer,
+								gameStatus: A2(author$project$Main$getStatus, newNextBoard, gameMode),
+								nextPlayer: nextPlayer
+							});
+					} else {
+						return _Utils_update(
+							model,
+							{
+								board: nextBoard,
+								currentPlayer: nextPlayer,
+								gameStatus: A2(author$project$Main$getStatus, nextBoard, gameMode),
+								nextPlayer: currentPlayer
+							});
+					}
 				}(),
-				elm$core$Platform$Cmd$none) : (_Utils_eq(model.gameMode, author$project$GameMode$HumanvRandom) ? _Utils_Tuple2(
-				function () {
-					var nextPlayer = author$project$Main$switchPlayers(model.currentPlayer);
-					var humanMarkedBoard = A3(
-						author$project$Board$markBoard,
-						index,
-						model.board,
-						author$project$Player$getMark(model.currentPlayer));
-					var nextBoard = A3(
-						author$project$Board$markBoard,
-						author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(humanMarkedBoard),
-						humanMarkedBoard,
-						author$project$Player$getMark(model.nextPlayer));
-					var gameMode = model.gameMode;
-					var currentPlayer = model.currentPlayer;
-					return _Utils_update(
-						model,
-						{
-							board: nextBoard,
-							currentPlayer: currentPlayer,
-							gameStatus: A2(author$project$Main$getStatus, nextBoard, gameMode),
-							nextPlayer: nextPlayer
-						});
-				}(),
-				elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{board: model.board}),
-				elm$core$Platform$Cmd$none));
+				elm$core$Platform$Cmd$none);
 		}
 	});
 var author$project$GameStatus$getGameStatus = F2(
@@ -5573,7 +5565,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	}
 };
 var elm$html$Html$button = _VirtualDom_node('button');
-var elm$html$Html$h2 = _VirtualDom_node('h2');
+var elm$html$Html$p = _VirtualDom_node('p');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -5639,7 +5631,7 @@ var author$project$Main$createBoardWithCells = F2(
 			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)) : _List_fromArray(
 			[
 				A2(
-				elm$html$Html$h2,
+				elm$html$Html$p,
 				_List_Nil,
 				_List_fromArray(
 					[
@@ -5647,6 +5639,7 @@ var author$project$Main$createBoardWithCells = F2(
 					]))
 			]);
 	});
+var author$project$GameMode$HumanvHuman = {$: 'HumanvHuman'};
 var author$project$GameMode$getGameMode = function (gameMode) {
 	switch (gameMode.$) {
 		case 'HumanvHuman':
@@ -5662,7 +5655,6 @@ var author$project$GameMode$getGameMode = function (gameMode) {
 var author$project$Main$SetGameMode = function (a) {
 	return {$: 'SetGameMode', a: a};
 };
-var elm$html$Html$p = _VirtualDom_node('p');
 var author$project$Main$createGameModeButtons = F2(
 	function (gameMode, board) {
 		return (_Utils_eq(gameMode, author$project$GameMode$NotChosen) || author$project$Board$isGameOver(board)) ? _List_fromArray(
@@ -5672,7 +5664,8 @@ var author$project$Main$createGameModeButtons = F2(
 				_List_fromArray(
 					[
 						elm$html$Html$Events$onClick(
-						author$project$Main$SetGameMode(author$project$GameMode$HumanvHuman))
+						author$project$Main$SetGameMode(author$project$GameMode$HumanvHuman)),
+						elm$html$Html$Attributes$id('humanvhuman')
 					]),
 				_List_fromArray(
 					[
@@ -5684,7 +5677,8 @@ var author$project$Main$createGameModeButtons = F2(
 				_List_fromArray(
 					[
 						elm$html$Html$Events$onClick(
-						author$project$Main$SetGameMode(author$project$GameMode$HumanvRandom))
+						author$project$Main$SetGameMode(author$project$GameMode$HumanvRandom)),
+						elm$html$Html$Attributes$id('humanvrandom')
 					]),
 				_List_fromArray(
 					[

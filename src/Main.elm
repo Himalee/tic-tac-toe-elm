@@ -75,31 +75,43 @@ update msg model =
             )
 
         MarkBoard index ->
-            if model.gameMode == HumanvHuman then
-                ( let
-                    nextBoard =
+            ( let
+                nextBoard =
+                    markBoard index model.board <| getMark model.currentPlayer
+
+                currentPlayer =
+                    model.currentPlayer
+
+                nextPlayer =
+                    switchPlayers model.currentPlayer
+
+                gameMode =
+                    model.gameMode
+              in
+              if model.gameMode == HumanvRandom then
+                let
+                    humanMarkedBoard =
                         markBoard index model.board <| getMark model.currentPlayer
 
-                    currentPlayer =
-                        model.currentPlayer
+                    newNextBoard =
+                        markBoard (getFirstIndexOfAvailableMove humanMarkedBoard) humanMarkedBoard <| getMark model.nextPlayer
+                in
+                { model
+                    | board = newNextBoard
+                    , currentPlayer = currentPlayer
+                    , nextPlayer = nextPlayer
+                    , gameStatus = getStatus newNextBoard gameMode
+                }
 
-                    nextPlayer =
-                        switchPlayers model.currentPlayer
-
-                    gameMode =
-                        model.gameMode
-                  in
-                  { model
+              else
+                { model
                     | board = nextBoard
                     , currentPlayer = nextPlayer
                     , nextPlayer = currentPlayer
                     , gameStatus = getStatus nextBoard gameMode
-                  }
-                , Cmd.none
-                )
-
-            else
-                ( { model | board = model.board }, Cmd.none )
+                }
+            , Cmd.none
+            )
 
 
 subscriptions : Model -> Sub Msg
@@ -133,7 +145,7 @@ createBoardWithCells board gameMode =
                 )
 
     else
-        [ h2 [] [ text "" ] ]
+        [ p [] [ text "" ] ]
 
 
 getStatus : List String -> GameMode -> GameStatus
@@ -154,7 +166,8 @@ getStatus board gameMode =
 createGameModeButtons : GameMode -> List String -> List (Html Msg)
 createGameModeButtons gameMode board =
     if gameMode == NotChosen || isGameOver board then
-        [ button [ onClick <| SetGameMode HumanvHuman ] [ text <| getGameMode HumanvHuman ]
+        [ button [ onClick <| SetGameMode HumanvHuman, id "humanvhuman" ] [ text <| getGameMode HumanvHuman ]
+        , button [ onClick <| SetGameMode HumanvRandom, id "humanvrandom" ] [ text <| getGameMode HumanvRandom ]
         ]
 
     else
