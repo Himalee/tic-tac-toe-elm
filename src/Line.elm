@@ -1,7 +1,6 @@
-module Line exposing (isGameOver, isThereADraw, isThereAWinner)
+module Line exposing (allWinningLines, containsTheSameMark)
 
 import Array exposing (fromList)
-import Board exposing (boardSize)
 import Cell exposing (emptyCell)
 import List exposing (all, any)
 import List.Extra exposing (groupsOf, transpose)
@@ -9,26 +8,9 @@ import Maybe exposing (withDefault)
 import Player exposing (..)
 
 
-isThereAWinner : List String -> Bool
-isThereAWinner board =
-    board
-        |> allWinningLines
-        |> List.any containsTheSameMark
-
-
 containsTheSameMark : List String -> Bool
 containsTheSameMark line =
     List.all ((==) (getMark X)) line || List.all ((==) (getMark O)) line
-
-
-isThereADraw : List String -> Bool
-isThereADraw board =
-    not (isThereAWinner board) && List.all ((/=) emptyCell) board
-
-
-isGameOver : List String -> Bool
-isGameOver board =
-    isThereAWinner board || isThereADraw board
 
 
 allWinningLines : List String -> List (List String)
@@ -72,3 +54,12 @@ rows board =
 split : Int -> List String -> List (List String)
 split size board =
     List.Extra.groupsOf size board
+
+
+boardSize : List String -> Int
+boardSize grid =
+    grid
+        |> List.length
+        |> toFloat
+        |> sqrt
+        |> round

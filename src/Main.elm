@@ -6,7 +6,6 @@ import Cell exposing (cellIsNotEmpty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Line exposing (isGameOver, isThereADraw, isThereAWinner)
 import Player exposing (..)
 
 

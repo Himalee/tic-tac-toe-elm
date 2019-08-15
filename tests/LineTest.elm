@@ -1,7 +1,7 @@
 module LineTest exposing (suite)
 
 import Expect
-import Line exposing (isGameOver, isThereADraw, isThereAWinner)
+import Line exposing (allWinningLines, containsTheSameMark)
 import Player exposing (..)
 import Test exposing (..)
 
@@ -9,19 +9,13 @@ import Test exposing (..)
 suite : Test
 suite =
     describe "Line"
-        [ test "checks if there is a winner - row" <|
+        [ test "checks if a line contains the same player mark" <|
             \() ->
-                Expect.equal True <| isThereAWinner [ "X", "X", "X", "", "", "", "", "", "" ]
-        , test "checks if there is a winner - column" <|
+                Expect.equal True <| containsTheSameMark [ "X", "X", "X" ]
+        , test "checks if line is empty and does not contain the same player mark" <|
             \() ->
-                Expect.equal True <| isThereAWinner [ "O", "", "X", "O", "", "", "O", "", "" ]
-        , test "checks if there is a winner - diagonal" <|
+                Expect.equal False <| containsTheSameMark [ "", "", "" ]
+        , test "gets all potential winning lines" <|
             \() ->
-                Expect.equal True <| isThereAWinner [ "O", "", "X", "", "O", "", "", "", "O" ]
-        , test "checks if the board result is a draw" <|
-            \() ->
-                Expect.equal True <| isThereADraw [ "X", "O", "X", "O", "O", "X", "X", "X", "O" ]
-        , test "checks if the game has ended" <|
-            \() ->
-                Expect.equal True <| isGameOver [ "X", "X", "X", "", "", "", "", "", "" ]
+                Expect.equal [ [ "O", "", "X" ], [ "", "O", "" ], [ "", "", "O" ], [ "O", "", "" ], [ "", "O", "" ], [ "X", "", "O" ], [ "O", "O", "O" ], [ "X", "O", "" ] ] <| allWinningLines [ "O", "", "X", "", "O", "", "", "", "O" ]
         ]
