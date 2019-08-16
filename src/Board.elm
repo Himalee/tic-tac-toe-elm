@@ -3,11 +3,7 @@ module Board exposing (..)
 import Array exposing (fromList, set, toList)
 import Cell exposing (emptyCell)
 import Line exposing (allWinningLines, containsTheSameMark)
-import List.Extra exposing (dropWhile, find)
-
-
-defaultIndexIfCellIsNotEmpty =
-    55
+import List.Extra exposing (dropWhile)
 
 
 create : Int -> List String

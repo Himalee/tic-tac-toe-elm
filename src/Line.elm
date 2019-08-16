@@ -4,7 +4,6 @@ import Array exposing (fromList)
 import Cell exposing (emptyCell)
 import List exposing (all, any)
 import List.Extra exposing (groupsOf, transpose)
-import Maybe exposing (withDefault)
 import Player exposing (..)
 
 
