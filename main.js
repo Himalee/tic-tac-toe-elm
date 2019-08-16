@@ -5494,22 +5494,22 @@ var author$project$Main$update = F2(
 					var gameMode = model.gameMode;
 					var currentPlayer = model.currentPlayer;
 					if (_Utils_eq(model.gameMode, author$project$GameMode$HumanvRandom)) {
-						var humanMarkedBoard = A3(
+						var boardMarkedWithHumanMove = A3(
 							author$project$Board$markBoard,
 							index,
 							model.board,
 							author$project$Player$getMark(model.currentPlayer));
-						var newNextBoard = A3(
+						var boardMarkedWithRandomMove = A3(
 							author$project$Board$markBoard,
-							author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(humanMarkedBoard),
-							humanMarkedBoard,
+							author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(boardMarkedWithHumanMove),
+							boardMarkedWithHumanMove,
 							author$project$Player$getMark(model.nextPlayer));
 						return _Utils_update(
 							model,
 							{
-								board: newNextBoard,
+								board: boardMarkedWithRandomMove,
 								currentPlayer: currentPlayer,
-								gameStatus: A2(author$project$Main$getStatus, newNextBoard, gameMode),
+								gameStatus: A2(author$project$Main$getStatus, boardMarkedWithRandomMove, gameMode),
 								nextPlayer: nextPlayer
 							});
 					} else {

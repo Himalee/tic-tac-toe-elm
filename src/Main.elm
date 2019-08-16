@@ -89,17 +89,17 @@ update msg model =
               in
               if model.gameMode == HumanvRandom then
                 let
-                    humanMarkedBoard =
+                    boardMarkedWithHumanMove =
                         markBoard index model.board <| getMark model.currentPlayer
 
-                    newNextBoard =
-                        markBoard (getFirstIndexOfAvailableMove humanMarkedBoard) humanMarkedBoard <| getMark model.nextPlayer
+                    boardMarkedWithRandomMove =
+                        markBoard (getFirstIndexOfAvailableMove boardMarkedWithHumanMove) boardMarkedWithHumanMove <| getMark model.nextPlayer
                 in
                 { model
-                    | board = newNextBoard
+                    | board = boardMarkedWithRandomMove
                     , currentPlayer = currentPlayer
                     , nextPlayer = nextPlayer
-                    , gameStatus = getStatus newNextBoard gameMode
+                    , gameStatus = getStatus boardMarkedWithRandomMove gameMode
                 }
 
               else
