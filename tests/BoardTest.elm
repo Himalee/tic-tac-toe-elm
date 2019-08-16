@@ -26,6 +26,9 @@ suite =
         , test "checks if there is a winner - diagonal" <|
             \() ->
                 Expect.equal True <| isThereAWinner [ "O", "", "X", "", "O", "", "", "", "O" ]
+        , test "finds winning move" <|
+            \() ->
+                Expect.equal "O" <| winningMove [ "O", "", "X", "", "O", "", "", "", "O" ]
         , test "checks if the board result is a draw" <|
             \() ->
                 Expect.equal True <| isThereADraw [ "X", "O", "X", "O", "O", "X", "X", "X", "O" ]

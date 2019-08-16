@@ -196,6 +196,6 @@ view model =
             (createGameModeButtons model.gameMode model.board)
         , div [ class "gridContainer" ]
             (createBoardWithCells model.board model.gameMode)
-        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus model.nextPlayer) ]
+        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus (winningMove model.board)) ]
         ]
     }

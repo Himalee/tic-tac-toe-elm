@@ -3,7 +3,7 @@ module Board exposing (..)
 import Array exposing (fromList, set, toList)
 import Cell exposing (emptyCell)
 import Line exposing (allWinningLines, containsTheSameMark)
-import List.Extra exposing (dropWhile)
+import List.Extra exposing (dropWhile, find)
 
 
 defaultIndexIfCellIsNotEmpty =
@@ -16,8 +16,8 @@ create size =
 
 
 markBoard : Int -> List String -> String -> List String
-markBoard index grid playerMark =
-    grid
+markBoard index board playerMark =
+    board
         |> Array.fromList
         |> Array.set index playerMark
         |> Array.toList
@@ -28,6 +28,20 @@ isThereAWinner board =
     board
         |> allWinningLines
         |> List.any containsTheSameMark
+
+
+winningMove : List String -> String
+winningMove board =
+    Maybe.withDefault emptyCell (Array.get 0 (Array.fromList (getWinningLine board)))
+
+
+getWinningLine : List String -> List String
+getWinningLine board =
+    let
+        winningLines =
+            allWinningLines board
+    in
+    Maybe.withDefault [] (List.head (List.filter containsTheSameMark winningLines))
 
 
 isThereADraw : List String -> Bool

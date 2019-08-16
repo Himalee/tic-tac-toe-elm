@@ -4958,13 +4958,13 @@ var elm$core$Array$set = F3(
 			tail));
 	});
 var author$project$Board$markBoard = F3(
-	function (index, grid, playerMark) {
+	function (index, board, playerMark) {
 		return elm$core$Array$toList(
 			A3(
 				elm$core$Array$set,
 				index,
 				playerMark,
-				elm$core$Array$fromList(grid)));
+				elm$core$Array$fromList(board)));
 	});
 var author$project$GameMode$HumanvRandom = {$: 'HumanvRandom'};
 var author$project$GameStatus$InPlay = {$: 'InPlay'};
@@ -5524,13 +5524,51 @@ var author$project$Main$update = F2(
 				elm$core$Platform$Cmd$none);
 		}
 	});
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return elm$core$Maybe$Just(x);
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Board$getWinningLine = function (board) {
+	var winningLines = author$project$Line$allWinningLines(board);
+	return A2(
+		elm$core$Maybe$withDefault,
+		_List_Nil,
+		elm$core$List$head(
+			A2(elm$core$List$filter, author$project$Line$containsTheSameMark, winningLines)));
+};
+var author$project$Board$winningMove = function (board) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		author$project$Cell$emptyCell,
+		A2(
+			elm$core$Array$get,
+			0,
+			elm$core$Array$fromList(
+				author$project$Board$getWinningLine(board))));
+};
 var author$project$GameStatus$getGameStatus = F2(
-	function (status, player) {
+	function (status, playerMark) {
 		switch (status.$) {
 			case 'InPlay':
 				return 'Play!';
 			case 'Winner':
-				return 'Player ' + (author$project$Player$getMark(player) + ' wins!');
+				return 'Player ' + (playerMark + ' wins!');
 			case 'Draw':
 				return 'It\'s a draw!';
 			default:
@@ -5741,7 +5779,10 @@ var author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						elm$html$Html$text(
-						A2(author$project$GameStatus$getGameStatus, model.gameStatus, model.nextPlayer))
+						A2(
+							author$project$GameStatus$getGameStatus,
+							model.gameStatus,
+							author$project$Board$winningMove(model.board)))
 					]))
 			]),
 		title: 'Tic Tac Toe'
