@@ -5399,12 +5399,6 @@ var author$project$Main$getStatus = F2(
 var author$project$Main$switchPlayers = function (player) {
 	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
 };
-var author$project$Board$defaultIndexIfCellIsNotEmpty = 55;
-var author$project$Board$getIndexIfValueIsEmpty = function (_n0) {
-	var index = _n0.a;
-	var value = _n0.b;
-	return _Utils_eq(value, author$project$Cell$emptyCell) ? index : author$project$Board$defaultIndexIfCellIsNotEmpty;
-};
 var elm$core$List$map = F2(
 	function (f, xs) {
 		return A3(
@@ -5446,11 +5440,19 @@ var elm_community$list_extra$List$Extra$dropWhile = F2(
 	});
 var author$project$Board$availableMoves = function (board) {
 	return A2(
-		elm_community$list_extra$List$Extra$dropWhile,
-		elm$core$Basics$eq(author$project$Board$defaultIndexIfCellIsNotEmpty),
+		elm$core$List$map,
+		function (_n1) {
+			var index = _n1.a;
+			var value = _n1.b;
+			return index;
+		},
 		A2(
-			elm$core$List$map,
-			author$project$Board$getIndexIfValueIsEmpty,
+			elm_community$list_extra$List$Extra$dropWhile,
+			function (_n0) {
+				var index = _n0.a;
+				var value = _n0.b;
+				return !_Utils_eq(value, author$project$Cell$emptyCell);
+			},
 			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)));
 };
 var author$project$RandomComputerPlayer$defaultRandomMove = 0;
@@ -5545,12 +5547,14 @@ var elm$core$List$head = function (list) {
 	}
 };
 var author$project$Board$getWinningLine = function (board) {
-	var winningLines = author$project$Line$allWinningLines(board);
 	return A2(
 		elm$core$Maybe$withDefault,
 		_List_Nil,
 		elm$core$List$head(
-			A2(elm$core$List$filter, author$project$Line$containsTheSameMark, winningLines)));
+			A2(
+				elm$core$List$filter,
+				author$project$Line$containsTheSameMark,
+				author$project$Line$allWinningLines(board))));
 };
 var author$project$Board$winningMove = function (board) {
 	return A2(

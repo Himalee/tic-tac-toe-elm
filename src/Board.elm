@@ -62,14 +62,5 @@ availableMoves : List String -> List Int
 availableMoves board =
     board
         |> List.indexedMap Tuple.pair
-        |> List.map getIndexIfValueIsEmpty
-        |> List.Extra.dropWhile ((==) defaultIndexIfCellIsNotEmpty)
-
-
-getIndexIfValueIsEmpty : ( Int, String ) -> Int
-getIndexIfValueIsEmpty ( index, value ) =
-    if value == emptyCell then
-        index
-
-    else
-        defaultIndexIfCellIsNotEmpty
+        |> List.Extra.dropWhile (\( index, value ) -> value /= emptyCell)
+        |> List.map (\( index, value ) -> index)

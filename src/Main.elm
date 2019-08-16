@@ -9,7 +9,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Player exposing (..)
-import Random exposing (..)
 import RandomComputerPlayer exposing (getFirstIndexOfAvailableMove)
 
 

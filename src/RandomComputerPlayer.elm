@@ -2,7 +2,6 @@ module RandomComputerPlayer exposing (getFirstIndexOfAvailableMove)
 
 import Array exposing (fromList, get)
 import Board exposing (availableMoves)
-import Random exposing (..)
 
 
 defaultRandomMove =
