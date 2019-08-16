@@ -32,16 +32,20 @@ isThereAWinner board =
 
 winningMove : List String -> String
 winningMove board =
-    Maybe.withDefault emptyCell (Array.get 0 (Array.fromList (getWinningLine board)))
+    board
+        |> getWinningLine
+        |> Array.fromList
+        |> Array.get 0
+        |> Maybe.withDefault emptyCell
 
 
 getWinningLine : List String -> List String
 getWinningLine board =
-    let
-        winningLines =
-            allWinningLines board
-    in
-    Maybe.withDefault [] (List.head (List.filter containsTheSameMark winningLines))
+    board
+        |> allWinningLines
+        |> List.filter containsTheSameMark
+        |> List.head
+        |> Maybe.withDefault []
 
 
 isThereADraw : List String -> Bool
