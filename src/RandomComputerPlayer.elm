@@ -11,4 +11,8 @@ defaultRandomMove =
 
 getFirstIndexOfAvailableMove : List String -> Int
 getFirstIndexOfAvailableMove board =
-    Maybe.withDefault defaultRandomMove (Array.get 0 (Array.fromList (availableMoves board)))
+    board
+        |> availableMoves
+        |> Array.fromList
+        |> Array.get 0
+        |> Maybe.withDefault defaultRandomMove
