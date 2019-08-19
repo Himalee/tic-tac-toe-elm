@@ -8,35 +8,32 @@ import Player exposing (..)
 
 getBestMove : Player -> List String -> Int
 getBestMove currentPlayer board =
-    let
-        depth =
-            1
+    if List.member 0 (availableMoves board) then
+        0
 
-        scores =
-            scoreAvailableMoves board currentPlayer depth
-
-        moves =
-            availableMoves board
-    in
-    pickBestMoveOrHighestScore depth scores moves
+    else
+        scoreAvailableMoves board currentPlayer 1
 
 
-scoreAvailableMoves : List String -> Player -> Int -> List Int
+scoreAvailableMoves : List String -> Player -> Int -> Int
 scoreAvailableMoves board currentPlayer depth =
     let
         moves =
             availableMoves
                 board
+
+        scores =
+            List.map
+                (\move ->
+                    let
+                        newBoard =
+                            markBoard move board (getMark currentPlayer)
+                    in
+                    getScore newBoard currentPlayer depth
+                )
+                moves
     in
-    List.map
-        (\move ->
-            let
-                newBoard =
-                    markBoard move board (getMark currentPlayer)
-            in
-            getScore newBoard currentPlayer depth
-        )
-        moves
+    pickBestMoveOrHighestScore depth scores moves
 
 
 getScore : List String -> Player -> Int -> Int
@@ -48,7 +45,7 @@ getScore board currentPlayer depth =
             * -1
 
     else
-        0
+        scoreAvailableMoves board (switchPlayers currentPlayer) (depth + 1) * -1
 
 
 scoreBoard : List String -> Int -> Int

@@ -10,6 +10,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Player exposing (..)
 import RandomComputerPlayer exposing (getFirstIndexOfAvailableMove)
+import UnbeatableComputerPlayer exposing (getBestMove)
 
 
 boardSize =
@@ -90,17 +91,26 @@ update msg model =
               case model.gameMode of
                 HumanvRandom ->
                     let
-                        boardMarkedWithHumanMove =
-                            markBoard index model.board <| getMark model.currentPlayer
-
                         boardMarkedWithRandomMove =
-                            markBoard (getFirstIndexOfAvailableMove boardMarkedWithHumanMove) boardMarkedWithHumanMove <| getMark model.nextPlayer
+                            markBoard (getFirstIndexOfAvailableMove nextBoard) nextBoard <| getMark model.nextPlayer
                     in
                     { model
                         | board = boardMarkedWithRandomMove
                         , currentPlayer = currentPlayer
                         , nextPlayer = nextPlayer
                         , gameStatus = getStatus boardMarkedWithRandomMove gameMode
+                    }
+
+                HumanvHard ->
+                    let
+                        boardMarkedWithHardMove =
+                            markBoard (getBestMove nextPlayer nextBoard) nextBoard <| getMark model.nextPlayer
+                    in
+                    { model
+                        | board = boardMarkedWithHardMove
+                        , currentPlayer = currentPlayer
+                        , nextPlayer = nextPlayer
+                        , gameStatus = getStatus boardMarkedWithHardMove gameMode
                     }
 
                 _ ->
