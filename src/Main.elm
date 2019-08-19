@@ -168,6 +168,7 @@ createGameModeButtons gameMode board =
     if gameMode == NotChosen || isGameOver board then
         [ viewGameModeButton HumanvHuman "humanvhuman"
         , viewGameModeButton HumanvRandom "humanvrandom"
+        , viewGameModeButton HumanvHard "humanvhard"
         ]
 
     else
@@ -176,7 +177,7 @@ createGameModeButtons gameMode board =
 
 viewGameModeButton : GameMode -> String -> Html Msg
 viewGameModeButton gameMode buttonId =
-    button [ onClick <| SetGameMode gameMode, id buttonId ] [ text <| getGameMode gameMode ]
+    button [ onClick <| SetGameMode gameMode, id buttonId, class "gameModeButton" ] [ text <| getGameMode gameMode ]
 
 
 
