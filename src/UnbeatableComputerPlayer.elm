@@ -11,9 +11,6 @@ getBestMove currentPlayer board =
     if List.member 0 (availableMoves board) then
         0
 
-    else if List.member 4 (availableMoves board) then
-        4
-
     else
         scoreAvailableMoves board currentPlayer 1
 
