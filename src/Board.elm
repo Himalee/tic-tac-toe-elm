@@ -3,7 +3,6 @@ module Board exposing (..)
 import Array exposing (fromList, set, toList)
 import Cell exposing (emptyCell)
 import Line exposing (allWinningLines, containsTheSameMark)
-import List.Extra exposing (dropWhile)
 
 
 create : Int -> List String
@@ -58,5 +57,5 @@ availableMoves : List String -> List Int
 availableMoves board =
     board
         |> List.indexedMap Tuple.pair
-        |> List.Extra.dropWhile (\( index, value ) -> value /= emptyCell)
+        |> List.filter (\( index, value ) -> value == emptyCell)
         |> List.map (\( index, value ) -> index)
