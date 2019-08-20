@@ -85,4 +85,6 @@ getIndexOfBestScore ( index, score ) =
 
 maxScore : List Int -> Int
 maxScore scores =
-    Maybe.withDefault 0 (List.maximum scores)
+    scores
+        |> List.maximum
+        |> Maybe.withDefault 0
