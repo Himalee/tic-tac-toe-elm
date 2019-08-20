@@ -7,7 +7,7 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    describe "Random Computer Player"
+    describe "RandomComputerPlayer"
         [ test "gets first available move" <|
             \() ->
                 Expect.equal 1 <| getFirstIndexOfAvailableMove [ "X", "", "O", "", "", "X", "", "O", "X" ]

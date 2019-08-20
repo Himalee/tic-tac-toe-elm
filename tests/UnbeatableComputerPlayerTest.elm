@@ -8,7 +8,7 @@ import UnbeatableComputerPlayer exposing (getBestMove)
 
 suite : Test
 suite =
-    describe "Unbeatable Computer Player"
+    describe "UnbeatableComputerPlayer"
         [ test "gets last remaining move which results in a win" <|
             \() ->
                 Expect.equal 2 <| getBestMove X [ "X", "X", "", "O", "O", "X", "X", "O", "O" ]

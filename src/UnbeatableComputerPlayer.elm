@@ -39,10 +39,7 @@ findBestMove board currentPlayer depth =
 getScore : List String -> Player -> Int -> Int
 getScore board currentPlayer depth =
     if isGameOver board then
-        scoreBoard
-            board
-            depth
-            * -1
+        -(scoreBoard board depth)
 
     else
         -(findBestMove board (switchPlayers currentPlayer) (depth + 1))
