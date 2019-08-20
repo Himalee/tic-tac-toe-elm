@@ -83,14 +83,3 @@ getIndexOfBestScore ( index, score ) =
 maxScore : List Int -> Int
 maxScore scores =
     Maybe.withDefault 0 (List.maximum scores)
-
-
-switchPlayers :
-    Player
-    -> Player
-switchPlayers player =
-    if player == X then
-        O
-
-    else
-        X

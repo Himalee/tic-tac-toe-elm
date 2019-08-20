@@ -133,17 +133,6 @@ subscriptions model =
 -- VIEW HELPER
 
 
-switchPlayers :
-    Player
-    -> Player
-switchPlayers player =
-    if player == X then
-        O
-
-    else
-        X
-
-
 createBoardWithCells : List String -> GameMode -> List (Html Msg)
 createBoardWithCells board gameMode =
     if gameMode /= NotChosen then
