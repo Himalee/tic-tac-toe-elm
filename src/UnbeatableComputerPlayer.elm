@@ -12,11 +12,11 @@ getBestMove currentPlayer board =
         0
 
     else
-        scoreAvailableMoves board currentPlayer 1
+        findBestMove board currentPlayer 1
 
 
-scoreAvailableMoves : List String -> Player -> Int -> Int
-scoreAvailableMoves board currentPlayer depth =
+findBestMove : List String -> Player -> Int -> Int
+findBestMove board currentPlayer depth =
     let
         moves =
             availableMoves
@@ -45,7 +45,7 @@ getScore board currentPlayer depth =
             * -1
 
     else
-        scoreAvailableMoves board (switchPlayers currentPlayer) (depth + 1) * -1
+        findBestMove board (switchPlayers currentPlayer) (depth + 1) * -1
 
 
 scoreBoard : List String -> Int -> Int
