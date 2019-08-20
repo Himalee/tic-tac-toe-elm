@@ -45,13 +45,13 @@ getScore board currentPlayer depth =
             * -1
 
     else
-        findBestMove board (switchPlayers currentPlayer) (depth + 1) * -1
+        -(findBestMove board (switchPlayers currentPlayer) (depth + 1))
 
 
 scoreBoard : List String -> Int -> Int
 scoreBoard board depth =
     if isThereAWinner board then
-        (1000 // depth) * -1
+        -(1000 // depth)
 
     else
         0
@@ -60,7 +60,10 @@ scoreBoard board depth =
 pickBestMoveOrHighestScore : Int -> List Int -> List Int -> Int
 pickBestMoveOrHighestScore depth scores availableMoves =
     if depth == 1 then
-        Maybe.withDefault 0 (Array.get (getIndex scores) (Array.fromList availableMoves))
+        availableMoves
+            |> Array.fromList
+            |> Array.get (getIndex scores)
+            |> Maybe.withDefault 0
 
     else
         maxScore scores
