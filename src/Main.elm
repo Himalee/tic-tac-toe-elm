@@ -92,24 +92,20 @@ update msg model =
                 HumanvRandom ->
                     let
                         boardMarkedWithRandomMove =
-                            markBoard (getFirstIndexOfAvailableMove nextBoard) nextBoard <| getMark model.nextPlayer
+                            markBoard (getFirstIndexOfAvailableMove nextBoard) nextBoard <| getMark nextPlayer
                     in
                     { model
                         | board = boardMarkedWithRandomMove
-                        , currentPlayer = currentPlayer
-                        , nextPlayer = nextPlayer
                         , gameStatus = getStatus boardMarkedWithRandomMove gameMode
                     }
 
                 HumanvHard ->
                     let
                         boardMarkedWithHardMove =
-                            markBoard (getBestMove nextPlayer nextBoard) nextBoard <| getMark model.nextPlayer
+                            markBoard (getBestMove nextPlayer nextBoard) nextBoard <| getMark nextPlayer
                     in
                     { model
                         | board = boardMarkedWithHardMove
-                        , currentPlayer = currentPlayer
-                        , nextPlayer = nextPlayer
                         , gameStatus = getStatus boardMarkedWithHardMove gameMode
                     }
 
