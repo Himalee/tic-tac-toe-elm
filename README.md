@@ -7,6 +7,7 @@ Users have the ability to:
 - Play on a 3x3 board
 - Play a Human vs Human game
 - Play a Human vs Random Computer Player game
+- Play a Human vs Unbeatable Computer Player game
 
 ## Getting Started
 
