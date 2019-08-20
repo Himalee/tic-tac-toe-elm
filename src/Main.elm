@@ -197,10 +197,10 @@ view model =
             [ h1 [ class "header" ]
                 [ text "Welcome to Tic Tac Toe" ]
             ]
+        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus (winningMove model.board)) ]
         , div [ class "gridContainer" ]
             (createGameModeButtons model.gameMode model.board)
         , div [ class "gridContainer" ]
             (createBoardWithCells model.board model.gameMode)
-        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus (winningMove model.board)) ]
         ]
     }
