@@ -5570,8 +5570,8 @@ var author$project$UnbeatableComputerPlayer$getBestMove = F2(
 	function (currentPlayer, board) {
 		return A2(
 			elm$core$List$member,
-			0,
-			author$project$Board$availableMoves(board)) ? 0 : A3(author$project$UnbeatableComputerPlayer$findBestMove, board, currentPlayer, 1);
+			4,
+			author$project$Board$availableMoves(board)) ? 4 : A3(author$project$UnbeatableComputerPlayer$findBestMove, board, currentPlayer, 1);
 	});
 var author$project$Main$update = F2(
 	function (msg, model) {
