@@ -77,7 +77,7 @@ describe("the app", () => {
     cy.contains('Player O wins!');
   });
 
-  it("hard computer player picks top left corner position if not taken", () => {
+  it("hard computer player picks top left corner position as first move if not taken", () => {
     cy.get('#humanvhard').click()
     cy.get('#cell4').click()
     cy.get('#cell0').contains('O')
