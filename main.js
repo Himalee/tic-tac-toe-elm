@@ -4966,7 +4966,6 @@ var author$project$Board$markBoard = F3(
 				playerMark,
 				elm$core$Array$fromList(board)));
 	});
-var author$project$GameMode$HumanvRandom = {$: 'HumanvRandom'};
 var author$project$GameStatus$InPlay = {$: 'InPlay'};
 var elm$core$Basics$round = _Basics_round;
 var elm$core$Basics$sqrt = _Basics_sqrt;
@@ -5396,9 +5395,20 @@ var author$project$Main$getStatus = F2(
 	function (board, gameMode) {
 		return author$project$Board$isThereAWinner(board) ? author$project$GameStatus$Winner : (author$project$Board$isThereADraw(board) ? author$project$GameStatus$Draw : (_Utils_eq(gameMode, author$project$GameMode$NotChosen) ? author$project$GameStatus$GameModeNotChosen : author$project$GameStatus$InPlay));
 	});
-var author$project$Main$switchPlayers = function (player) {
+var author$project$Player$switchPlayers = function (player) {
 	return _Utils_eq(player, author$project$Player$X) ? author$project$Player$O : author$project$Player$X;
 };
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var elm$core$List$map = F2(
 	function (f, xs) {
 		return A3(
@@ -5417,27 +5427,6 @@ var elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
 	});
-var elm_community$list_extra$List$Extra$dropWhile = F2(
-	function (predicate, list) {
-		dropWhile:
-		while (true) {
-			if (!list.b) {
-				return _List_Nil;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (predicate(x)) {
-					var $temp$predicate = predicate,
-						$temp$list = xs;
-					predicate = $temp$predicate;
-					list = $temp$list;
-					continue dropWhile;
-				} else {
-					return list;
-				}
-			}
-		}
-	});
 var author$project$Board$availableMoves = function (board) {
 	return A2(
 		elm$core$List$map,
@@ -5447,11 +5436,11 @@ var author$project$Board$availableMoves = function (board) {
 			return index;
 		},
 		A2(
-			elm_community$list_extra$List$Extra$dropWhile,
+			elm$core$List$filter,
 			function (_n0) {
 				var index = _n0.a;
 				var value = _n0.b;
-				return !_Utils_eq(value, author$project$Cell$emptyCell);
+				return _Utils_eq(value, author$project$Cell$emptyCell);
 			},
 			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)));
 };
@@ -5466,6 +5455,124 @@ var author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove = function 
 			elm$core$Array$fromList(
 				author$project$Board$availableMoves(board))));
 };
+var author$project$Board$isGameOver = function (board) {
+	return author$project$Board$isThereAWinner(board) || author$project$Board$isThereADraw(board);
+};
+var author$project$UnbeatableComputerPlayer$getIndexOfBestScore = function (_n0) {
+	var index = _n0.a;
+	var score = _n0.b;
+	return index;
+};
+var elm$core$List$maximum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return elm$core$Maybe$Just(
+			A3(elm$core$List$foldl, elm$core$Basics$max, x, xs));
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$UnbeatableComputerPlayer$maxScore = function (scores) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		0,
+		elm$core$List$maximum(scores));
+};
+var elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
+var author$project$UnbeatableComputerPlayer$getIndex = function (scores) {
+	return author$project$UnbeatableComputerPlayer$getIndexOfBestScore(
+		A2(
+			elm$core$Maybe$withDefault,
+			_Utils_Tuple2(0, 0),
+			A2(
+				elm_community$list_extra$List$Extra$find,
+				function (_n0) {
+					var index = _n0.a;
+					var score = _n0.b;
+					return _Utils_eq(
+						score,
+						author$project$UnbeatableComputerPlayer$maxScore(scores));
+				},
+				A2(elm$core$List$indexedMap, elm$core$Tuple$pair, scores))));
+};
+var author$project$UnbeatableComputerPlayer$pickBestMoveOrHighestScore = F3(
+	function (depth, scores, availableMoves) {
+		return (depth === 1) ? A2(
+			elm$core$Maybe$withDefault,
+			0,
+			A2(
+				elm$core$Array$get,
+				author$project$UnbeatableComputerPlayer$getIndex(scores),
+				elm$core$Array$fromList(availableMoves))) : author$project$UnbeatableComputerPlayer$maxScore(scores);
+	});
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var author$project$UnbeatableComputerPlayer$scoreBoard = F2(
+	function (board, depth) {
+		return author$project$Board$isThereAWinner(board) ? (-((1000 / depth) | 0)) : 0;
+	});
+var author$project$UnbeatableComputerPlayer$findBestMove = F3(
+	function (board, currentPlayer, depth) {
+		var moves = author$project$Board$availableMoves(board);
+		var scores = A2(
+			elm$core$List$map,
+			function (move) {
+				var newBoard = A3(
+					author$project$Board$markBoard,
+					move,
+					board,
+					author$project$Player$getMark(currentPlayer));
+				return A3(author$project$UnbeatableComputerPlayer$getScore, newBoard, currentPlayer, depth);
+			},
+			moves);
+		return A3(author$project$UnbeatableComputerPlayer$pickBestMoveOrHighestScore, depth, scores, moves);
+	});
+var author$project$UnbeatableComputerPlayer$getScore = F3(
+	function (board, currentPlayer, depth) {
+		return author$project$Board$isGameOver(board) ? (-A2(author$project$UnbeatableComputerPlayer$scoreBoard, board, depth)) : (-A3(
+			author$project$UnbeatableComputerPlayer$findBestMove,
+			board,
+			author$project$Player$switchPlayers(currentPlayer),
+			depth + 1));
+	});
+var elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
+var author$project$UnbeatableComputerPlayer$getBestMove = F2(
+	function (currentPlayer, board) {
+		return A2(
+			elm$core$List$member,
+			0,
+			author$project$Board$availableMoves(board)) ? 0 : A3(author$project$UnbeatableComputerPlayer$findBestMove, board, currentPlayer, 1);
+	});
 var author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'SetGameMode') {
@@ -5485,7 +5592,7 @@ var author$project$Main$update = F2(
 			var index = msg.a;
 			return _Utils_Tuple2(
 				function () {
-					var nextPlayer = author$project$Main$switchPlayers(model.currentPlayer);
+					var nextPlayer = author$project$Player$switchPlayers(model.currentPlayer);
 					var nextBoard = A3(
 						author$project$Board$markBoard,
 						index,
@@ -5493,49 +5600,45 @@ var author$project$Main$update = F2(
 						author$project$Player$getMark(model.currentPlayer));
 					var gameMode = model.gameMode;
 					var currentPlayer = model.currentPlayer;
-					if (_Utils_eq(model.gameMode, author$project$GameMode$HumanvRandom)) {
-						var boardMarkedWithHumanMove = A3(
-							author$project$Board$markBoard,
-							index,
-							model.board,
-							author$project$Player$getMark(model.currentPlayer));
-						var boardMarkedWithRandomMove = A3(
-							author$project$Board$markBoard,
-							author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(boardMarkedWithHumanMove),
-							boardMarkedWithHumanMove,
-							author$project$Player$getMark(model.nextPlayer));
-						return _Utils_update(
-							model,
-							{
-								board: boardMarkedWithRandomMove,
-								currentPlayer: currentPlayer,
-								gameStatus: A2(author$project$Main$getStatus, boardMarkedWithRandomMove, gameMode),
-								nextPlayer: nextPlayer
-							});
-					} else {
-						return _Utils_update(
-							model,
-							{
-								board: nextBoard,
-								currentPlayer: nextPlayer,
-								gameStatus: A2(author$project$Main$getStatus, nextBoard, gameMode),
-								nextPlayer: currentPlayer
-							});
+					var _n1 = model.gameMode;
+					switch (_n1.$) {
+						case 'HumanvRandom':
+							var boardMarkedWithRandomMove = A3(
+								author$project$Board$markBoard,
+								author$project$RandomComputerPlayer$getFirstIndexOfAvailableMove(nextBoard),
+								nextBoard,
+								author$project$Player$getMark(nextPlayer));
+							return _Utils_update(
+								model,
+								{
+									board: boardMarkedWithRandomMove,
+									gameStatus: A2(author$project$Main$getStatus, boardMarkedWithRandomMove, gameMode)
+								});
+						case 'HumanvHard':
+							var boardMarkedWithHardMove = A3(
+								author$project$Board$markBoard,
+								A2(author$project$UnbeatableComputerPlayer$getBestMove, nextPlayer, nextBoard),
+								nextBoard,
+								author$project$Player$getMark(nextPlayer));
+							return _Utils_update(
+								model,
+								{
+									board: boardMarkedWithHardMove,
+									gameStatus: A2(author$project$Main$getStatus, boardMarkedWithHardMove, gameMode)
+								});
+						default:
+							return _Utils_update(
+								model,
+								{
+									board: nextBoard,
+									currentPlayer: nextPlayer,
+									gameStatus: A2(author$project$Main$getStatus, nextBoard, gameMode),
+									nextPlayer: currentPlayer
+								});
 					}
 				}(),
 				elm$core$Platform$Cmd$none);
 		}
-	});
-var elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
 	});
 var elm$core$List$head = function (list) {
 	if (list.b) {
@@ -5579,9 +5682,6 @@ var author$project$GameStatus$getGameStatus = F2(
 				return 'Choose a game mode';
 		}
 	});
-var author$project$Board$isGameOver = function (board) {
-	return author$project$Board$isThereAWinner(board) || author$project$Board$isThereADraw(board);
-};
 var author$project$Cell$cellIsNotEmpty = function (value) {
 	return !_Utils_eq(value, author$project$Cell$emptyCell);
 };
@@ -5681,7 +5781,9 @@ var author$project$Main$createBoardWithCells = F2(
 					]))
 			]);
 	});
+var author$project$GameMode$HumanvHard = {$: 'HumanvHard'};
 var author$project$GameMode$HumanvHuman = {$: 'HumanvHuman'};
+var author$project$GameMode$HumanvRandom = {$: 'HumanvRandom'};
 var author$project$GameMode$getGameMode = function (gameMode) {
 	switch (gameMode.$) {
 		case 'HumanvHuman':
@@ -5697,36 +5799,30 @@ var author$project$GameMode$getGameMode = function (gameMode) {
 var author$project$Main$SetGameMode = function (a) {
 	return {$: 'SetGameMode', a: a};
 };
+var author$project$Main$viewGameModeButton = F2(
+	function (gameMode, buttonId) {
+		return A2(
+			elm$html$Html$button,
+			_List_fromArray(
+				[
+					elm$html$Html$Events$onClick(
+					author$project$Main$SetGameMode(gameMode)),
+					elm$html$Html$Attributes$id(buttonId),
+					elm$html$Html$Attributes$class('gameModeButton')
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text(
+					author$project$GameMode$getGameMode(gameMode))
+				]));
+	});
 var author$project$Main$createGameModeButtons = F2(
 	function (gameMode, board) {
 		return (_Utils_eq(gameMode, author$project$GameMode$NotChosen) || author$project$Board$isGameOver(board)) ? _List_fromArray(
 			[
-				A2(
-				elm$html$Html$button,
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(
-						author$project$Main$SetGameMode(author$project$GameMode$HumanvHuman)),
-						elm$html$Html$Attributes$id('humanvhuman')
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text(
-						author$project$GameMode$getGameMode(author$project$GameMode$HumanvHuman))
-					])),
-				A2(
-				elm$html$Html$button,
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(
-						author$project$Main$SetGameMode(author$project$GameMode$HumanvRandom)),
-						elm$html$Html$Attributes$id('humanvrandom')
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text(
-						author$project$GameMode$getGameMode(author$project$GameMode$HumanvRandom))
-					]))
+				A2(author$project$Main$viewGameModeButton, author$project$GameMode$HumanvHuman, 'humanvhuman'),
+				A2(author$project$Main$viewGameModeButton, author$project$GameMode$HumanvRandom, 'humanvrandom'),
+				A2(author$project$Main$viewGameModeButton, author$project$GameMode$HumanvHard, 'humanvhard')
 			]) : _List_fromArray(
 			[
 				A2(
@@ -5761,20 +5857,6 @@ var author$project$Main$view = function (model) {
 							]))
 					])),
 				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('gridContainer')
-					]),
-				A2(author$project$Main$createGameModeButtons, model.gameMode, model.board)),
-				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('gridContainer')
-					]),
-				A2(author$project$Main$createBoardWithCells, model.board, model.gameMode)),
-				A2(
 				elm$html$Html$p,
 				_List_fromArray(
 					[
@@ -5787,7 +5869,21 @@ var author$project$Main$view = function (model) {
 							author$project$GameStatus$getGameStatus,
 							model.gameStatus,
 							author$project$Board$winningMove(model.board)))
-					]))
+					])),
+				A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('gridContainer')
+					]),
+				A2(author$project$Main$createGameModeButtons, model.gameMode, model.board)),
+				A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('gridContainer')
+					]),
+				A2(author$project$Main$createBoardWithCells, model.board, model.gameMode))
 			]),
 		title: 'Tic Tac Toe'
 	};

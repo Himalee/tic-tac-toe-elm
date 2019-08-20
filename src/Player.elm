@@ -14,3 +14,14 @@ getMark player =
 
         O ->
             "O"
+
+
+switchPlayers :
+    Player
+    -> Player
+switchPlayers player =
+    if player == X then
+        O
+
+    else
+        X

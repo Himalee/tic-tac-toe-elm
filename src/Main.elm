@@ -10,6 +10,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Player exposing (..)
 import RandomComputerPlayer exposing (getFirstIndexOfAvailableMove)
+import UnbeatableComputerPlayer exposing (getBestMove)
 
 
 boardSize =
@@ -87,28 +88,34 @@ update msg model =
                 gameMode =
                     model.gameMode
               in
-              if model.gameMode == HumanvRandom then
-                let
-                    boardMarkedWithHumanMove =
-                        markBoard index model.board <| getMark model.currentPlayer
+              case model.gameMode of
+                HumanvRandom ->
+                    let
+                        boardMarkedWithRandomMove =
+                            markBoard (getFirstIndexOfAvailableMove nextBoard) nextBoard <| getMark nextPlayer
+                    in
+                    { model
+                        | board = boardMarkedWithRandomMove
+                        , gameStatus = getStatus boardMarkedWithRandomMove gameMode
+                    }
 
-                    boardMarkedWithRandomMove =
-                        markBoard (getFirstIndexOfAvailableMove boardMarkedWithHumanMove) boardMarkedWithHumanMove <| getMark model.nextPlayer
-                in
-                { model
-                    | board = boardMarkedWithRandomMove
-                    , currentPlayer = currentPlayer
-                    , nextPlayer = nextPlayer
-                    , gameStatus = getStatus boardMarkedWithRandomMove gameMode
-                }
+                HumanvHard ->
+                    let
+                        boardMarkedWithHardMove =
+                            markBoard (getBestMove nextPlayer nextBoard) nextBoard <| getMark nextPlayer
+                    in
+                    { model
+                        | board = boardMarkedWithHardMove
+                        , gameStatus = getStatus boardMarkedWithHardMove gameMode
+                    }
 
-              else
-                { model
-                    | board = nextBoard
-                    , currentPlayer = nextPlayer
-                    , nextPlayer = currentPlayer
-                    , gameStatus = getStatus nextBoard gameMode
-                }
+                _ ->
+                    { model
+                        | board = nextBoard
+                        , currentPlayer = nextPlayer
+                        , nextPlayer = currentPlayer
+                        , gameStatus = getStatus nextBoard gameMode
+                    }
             , Cmd.none
             )
 
@@ -120,17 +127,6 @@ subscriptions model =
 
 
 -- VIEW HELPER
-
-
-switchPlayers :
-    Player
-    -> Player
-switchPlayers player =
-    if player == X then
-        O
-
-    else
-        X
 
 
 createBoardWithCells : List String -> GameMode -> List (Html Msg)
@@ -165,12 +161,18 @@ getStatus board gameMode =
 createGameModeButtons : GameMode -> List String -> List (Html Msg)
 createGameModeButtons gameMode board =
     if gameMode == NotChosen || isGameOver board then
-        [ button [ onClick <| SetGameMode HumanvHuman, id "humanvhuman" ] [ text <| getGameMode HumanvHuman ]
-        , button [ onClick <| SetGameMode HumanvRandom, id "humanvrandom" ] [ text <| getGameMode HumanvRandom ]
+        [ viewGameModeButton HumanvHuman "humanvhuman"
+        , viewGameModeButton HumanvRandom "humanvrandom"
+        , viewGameModeButton HumanvHard "humanvhard"
         ]
 
     else
         [ p [] [ text "" ] ]
+
+
+viewGameModeButton : GameMode -> String -> Html Msg
+viewGameModeButton gameMode buttonId =
+    button [ onClick <| SetGameMode gameMode, id buttonId, class "gameModeButton" ] [ text <| getGameMode gameMode ]
 
 
 
@@ -191,10 +193,10 @@ view model =
             [ h1 [ class "header" ]
                 [ text "Welcome to Tic Tac Toe" ]
             ]
+        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus (winningMove model.board)) ]
         , div [ class "gridContainer" ]
             (createGameModeButtons model.gameMode model.board)
         , div [ class "gridContainer" ]
             (createBoardWithCells model.board model.gameMode)
-        , p [ class "gameStatus" ] [ text (getGameStatus model.gameStatus (winningMove model.board)) ]
         ]
     }

@@ -77,4 +77,24 @@ describe("the app", () => {
     cy.contains('Player O wins!');
   });
 
+  it("hard computer player picks top left corner position as first move if not taken", () => {
+    cy.get('#humanvhard').click()
+    cy.get('#cell4').click()
+    cy.get('#cell0').contains('O')
+  });
+
+  it("hard computer player block player X from winning", () => {
+    cy.get('#humanvhard').click()
+    cy.get('#cell2').click()
+    cy.get('#cell5').click()
+    cy.get('#cell8').contains('O')
+  });
+
+  it("hard computer player plays to win", () => {
+    cy.get('#humanvhard').click()
+    cy.get('#cell4').click()
+    cy.get('#cell2').click()
+    cy.get('#cell5').click()
+    cy.contains('Player O wins!');
+  });
 });
