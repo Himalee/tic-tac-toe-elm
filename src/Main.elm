@@ -136,7 +136,14 @@ createBoardWithCells board gameMode =
             |> List.indexedMap Tuple.pair
             |> List.map
                 (\( index, value ) ->
-                    button [ onClick <| MarkBoard index, disabled <| cellIsNotEmpty value || isGameOver board, class "cell", id ("cell" ++ String.fromInt index) ] [ text <| value ]
+                    button
+                        [ onClick <|
+                            MarkBoard index
+                        , disabled <| cellIsNotEmpty value || isGameOver board
+                        , class "cell"
+                        , id ("cell" ++ String.fromInt index)
+                        ]
+                        [ text <| value ]
                 )
 
     else

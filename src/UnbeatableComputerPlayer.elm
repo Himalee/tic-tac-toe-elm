@@ -10,13 +10,25 @@ middleCellOn3x3Board =
     4
 
 
+startingDepth =
+    1
+
+
+noScore =
+    0
+
+
+noIndex =
+    0
+
+
 getBestMove : Player -> List String -> Int
 getBestMove currentPlayer board =
     if List.member middleCellOn3x3Board (availableMoves board) then
         middleCellOn3x3Board
 
     else
-        findBestMove board currentPlayer 1
+        findBestMove board currentPlayer startingDepth
 
 
 findBestMove : List String -> Player -> Int -> Int
@@ -55,7 +67,7 @@ scoreBoard board depth =
         -(1000 // depth)
 
     else
-        0
+        noScore
 
 
 pickBestMoveOrHighestScore : Int -> List Int -> List Int -> Int
@@ -64,7 +76,7 @@ pickBestMoveOrHighestScore depth scores availableMoves =
         availableMoves
             |> Array.fromList
             |> Array.get (getIndex scores)
-            |> Maybe.withDefault 0
+            |> Maybe.withDefault noScore
 
     else
         maxScore scores
@@ -75,7 +87,7 @@ getIndex scores =
     scores
         |> List.indexedMap Tuple.pair
         |> List.Extra.find (\( index, score ) -> score == maxScore scores)
-        |> Maybe.withDefault ( 0, 0 )
+        |> Maybe.withDefault ( noIndex, noScore )
         |> getIndexOfBestScore
 
 
@@ -88,4 +100,4 @@ maxScore : List Int -> Int
 maxScore scores =
     scores
         |> List.maximum
-        |> Maybe.withDefault 0
+        |> Maybe.withDefault noScore
