@@ -13,16 +13,16 @@ Users have the ability to:
 
 #### Prerequisites
 
-1. Install [NodeJS](https://nodejs.org/en/)
-2. Install the latest version of [Elm](https://guide.elm-lang.org/install.html) (version 0.19)
+1. Install [NodeJS](https://nodejs.org/en/).
+2. Install the latest version of [Elm](https://guide.elm-lang.org/install.html) (version 0.19).
 
 #### Running instructions
 
 1. Clone the repository
 2. In your terminal, navigate into the repository
 3. Install dependencies with `$ npm install`
-4. Run unit tests by running `$ elm-test`
-6. Run integration tests by opening a new terminal window and starting development server with `$ elm reactor`. Then run `$ npm run cypress:open`
+4. Run unit tests by running `$ npm run test`
+6. Run integration tests by opening a new terminal window and starting development server with `$ npm run start`. Then run `$ npm run cypress:open`
 7. To start the app, first build it with the command `$ elm make src/Main.elm --output index.js`. Then `$ open index.html`.
 8. Alternatively, run the app in development mode. Start the app by running `$ elm reactor`. Open [http://localhost:8000/src/Main.elm](http://localhost:8000/src/Main.elm) to view it in the browser.
 
