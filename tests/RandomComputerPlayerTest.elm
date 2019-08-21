@@ -1,7 +1,7 @@
 module RandomComputerPlayerTest exposing (suite)
 
 import Expect
-import RandomComputerPlayer exposing (..)
+import RandomComputerPlayer exposing (getFirstIndexOfAvailableMove)
 import Test exposing (..)
 
 
