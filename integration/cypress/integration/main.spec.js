@@ -79,8 +79,8 @@ describe("the app", () => {
 
   it("hard computer player picks top left corner position as first move if not taken", () => {
     cy.get('#humanvhard').click()
-    cy.get('#cell4').click()
-    cy.get('#cell0').contains('O')
+    cy.get('#cell0').click()
+    cy.get('#cell4').contains('O')
   });
 
   it("hard computer player block player X from winning", () => {

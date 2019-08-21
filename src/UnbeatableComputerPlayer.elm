@@ -6,10 +6,14 @@ import List.Extra exposing (find)
 import Player exposing (..)
 
 
+middleCellOn3x3Board =
+    4
+
+
 getBestMove : Player -> List String -> Int
 getBestMove currentPlayer board =
-    if List.member 0 (availableMoves board) then
-        0
+    if List.member middleCellOn3x3Board (availableMoves board) then
+        middleCellOn3x3Board
 
     else
         findBestMove board currentPlayer 1

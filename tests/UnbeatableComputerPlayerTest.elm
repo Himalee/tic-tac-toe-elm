@@ -26,11 +26,11 @@ suite =
                 Expect.equal 4 <| getBestMove X [ "O", "X", "", "", "", "", "", "X", "O" ]
         , test "X picks move to block O from winning" <|
             \() ->
-                Expect.equal 2 <| getBestMove X [ "O", "O", "", "X", "", "", "", "X", "" ]
+                Expect.equal 2 <| getBestMove X [ "O", "O", "", "", "X", "", "", "X", "" ]
         , test "O picks move to block X from winning" <|
             \() ->
-                Expect.equal 2 <| getBestMove O [ "X", "X", "", "O", "", "", "", "O", "" ]
+                Expect.equal 2 <| getBestMove O [ "X", "X", "", "", "O", "", "", "O", "" ]
         , test "O picks move to win vs move to block X from winning" <|
             \() ->
-                Expect.equal 6 <| getBestMove O [ "X", "X", "", "", "", "", "", "O", "O" ]
+                Expect.equal 6 <| getBestMove O [ "", "", "", "", "X", "X", "", "O", "O" ]
         ]
