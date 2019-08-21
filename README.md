@@ -24,7 +24,7 @@ Users have the ability to:
 4. Run unit tests by running `$ npm run test`
 6. Run integration tests by opening a new terminal window and starting development server with `$ npm run start`. Then run `$ npm run cypress:run`
 7. To start the app, first build it with the command `$ elm make src/Main.elm --output index.js`. Then `$ open index.html`.
-8. Alternatively, run the app in development mode. Start the app by running `$ elm reactor`. Open [http://localhost:8000/src/Main.elm](http://localhost:8000/src/Main.elm) to view it in the browser.
+8. Alternatively, run the app in development mode. Start the app by running `$ npm run start`. Open [http://localhost:8000/src/Main.elm](http://localhost:8000/src/Main.elm) to view it in the browser.
 
 
 #### Roadmap
