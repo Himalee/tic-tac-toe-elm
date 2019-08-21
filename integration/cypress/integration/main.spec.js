@@ -9,19 +9,19 @@ describe("the app", () => {
     cy.contains('Welcome to Tic Tac Toe');
   });
 
-  it("displays 9 buttons that represent the board", () => {
+  it("displays 9 cells that represent the board", () => {
     cy.get('#humanvhuman').click()
     cy.get('button').should('have.length', 9)
   });
 
-  it("clicks buttons, replaces text with 'X' and displays message that game is still in play", () => {
+  it("clicks cell, replaces text with 'X' and displays message that game is still in play", () => {
     cy.get('#humanvhuman').click()
     cy.get('#cell0').click()
     cy.contains('X')
     cy.contains('Play!');
   });
 
-  it("player marks are switched when clicking board buttons", () => {
+  it("player marks are switched when clicking board cells", () => {
     cy.get('#humanvhuman').click()
     cy.get('#cell0').click()
     cy.get('#cell1').click()
