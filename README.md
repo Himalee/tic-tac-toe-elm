@@ -23,10 +23,12 @@ Users have the ability to:
 3. Install dependencies with `$ npm install`
 4. Run unit tests by running `$ elm-test`
 6. Run integration tests by opening a new terminal window and starting development server with `$ elm reactor`. Then run `$ npm run cypress:open`
-7. To start the app, first build it with the command `$ elm make src/Main.elm --output src/index.js`. Then `$ open public/index.html`.
+7. To start the app, first build it with the command `$ elm make src/Main.elm --output index.js`. Then `$ open index.html`.
 8. Alternatively, run the app in development mode. Start the app by running `$ elm reactor`. Open [http://localhost:8000/src/Main.elm](http://localhost:8000/src/Main.elm) to view it in the browser.
 
 
 #### Roadmap
 
 - [ ] Implement `RandomComputerPlayer` using an Elm random generator.
+- [ ] Deploy app.
+- [ ] Run Cypress integration tests through Travis CI.
