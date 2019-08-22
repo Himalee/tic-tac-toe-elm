@@ -1,7 +1,5 @@
 module Cell exposing (cellIsNotEmpty, emptyCell)
 
-import Array exposing (fromList, get)
-
 
 emptyCell : String
 emptyCell =
